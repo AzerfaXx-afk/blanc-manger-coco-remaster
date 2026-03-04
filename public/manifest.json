@@ -1,0 +1,17 @@
+{
+    "name": "Au Fond Du Trou",
+    "short_name": "AFDT",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#050505",
+    "theme_color": "#10b981",
+    "description": "Le jeu pour tes potes horribles.",
+    "icons": [
+        {
+            "src": "/icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

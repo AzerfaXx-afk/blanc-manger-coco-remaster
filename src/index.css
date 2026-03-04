@@ -1,0 +1,61 @@
+:root {
+  --bg-dark: #050505;
+  --bg-panel: #121212;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-neon: #10b981;
+  --accent-red: #e11d48;
+  --accent-blue: #2563eb;
+  
+  --card-dark: #0f172a;
+  --card-light: #f8fafc;
+  --card-text-dark: #f8fafc;
+  --card-text-light: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(circle at 50% 0%, #1e1e1e 0%, transparent 50%);
+}
+
+.glass {
+  background: rgba(18, 18, 18, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.text-glow {
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.neon-glow {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
