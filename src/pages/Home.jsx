@@ -3,19 +3,35 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Share2, Users, Layers, Menu, User } from 'lucide-react';
 import MenuOverlay from '../components/MenuOverlay';
+import useRoom from '../hooks/useRoom';
 
 const Home = () => {
     const navigate = useNavigate();
     const [code, setCode] = useState('');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [joinError, setJoinError] = useState('');
+    const { createRoom, joinRoom } = useRoom();
 
-    const handleCreate = () => {
-        navigate('/lobby', { state: { code: 'A2B7', isHost: true } });
+    const handleCreate = async () => {
+        setLoading(true);
+        const roomCode = await createRoom();
+        setLoading(false);
+        if (roomCode) {
+            navigate('/lobby', { state: { code: roomCode, isHost: true } });
+        }
     };
 
-    const handleJoin = () => {
-        if (code.length >= 4) {
+    const handleJoin = async () => {
+        if (code.length < 4) return;
+        setLoading(true);
+        setJoinError('');
+        const success = await joinRoom(code);
+        setLoading(false);
+        if (success) {
             navigate('/lobby', { state: { code: code.toUpperCase(), isHost: false } });
+        } else {
+            setJoinError('Room introuvable ou partie déjà commencée');
         }
     };
 
@@ -173,7 +189,8 @@ const Home = () => {
                     onClick={handleCreate}
                     style={{
                         width: '100%', padding: '14px', borderRadius: '12px',
-                        fontWeight: '800', fontSize: '1rem', cursor: 'pointer',
+                        fontWeight: '800', fontSize: '1rem', cursor: loading ? 'wait' : 'pointer',
+                        opacity: loading ? 0.6 : 1,
                         textTransform: 'uppercase', letterSpacing: '1px',
                         background: 'linear-gradient(180deg, rgba(20, 80, 100, 0.6) 0%, rgba(15, 30, 40, 0.8) 100%)',
                         border: '1px solid rgba(0, 229, 255, 0.4)',
@@ -184,7 +201,7 @@ const Home = () => {
                         WebkitBackdropFilter: 'blur(10px)'
                     }}
                 >
-                    CRÉER UNE PARTIE
+                    {loading ? 'CRÉATION...' : 'CRÉER UNE PARTIE'}
                 </motion.button>
 
                 <div style={{ position: 'relative', textAlign: 'center', margin: '0' }}>
@@ -253,6 +270,11 @@ const Home = () => {
                             REJOINDRE
                         </motion.button>
                     </div>
+                    {joinError && (
+                        <div style={{ color: '#ff4444', fontSize: '0.7rem', marginTop: '6px', textAlign: 'center' }}>
+                            {joinError}
+                        </div>
+                    )}
                 </div>
             </motion.div>
 
