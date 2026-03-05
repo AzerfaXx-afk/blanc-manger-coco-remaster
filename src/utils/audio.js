@@ -114,4 +114,26 @@ export const initGlobalAudio = () => {
 
     document.addEventListener('click', handleFirstInteraction);
     document.addEventListener('touchstart', handleFirstInteraction);
+
+    // Global bop sound on interactive element clicks
+    document.addEventListener('click', (e) => {
+        const target = e.target;
+        const isInteractive = target.closest('button, a, [role="button"], [data-clickable]') ||
+            (target.closest && target.closest('[style*="cursor: pointer"], [style*="cursor:pointer"]'));
+
+        // Also check computed style for cursor: pointer
+        let el = target;
+        let found = !!isInteractive;
+        while (el && !found && el !== document.body) {
+            const style = window.getComputedStyle(el);
+            if (style.cursor === 'pointer') {
+                found = true;
+            }
+            el = el.parentElement;
+        }
+
+        if (found) {
+            playBop();
+        }
+    }, { capture: true });
 };

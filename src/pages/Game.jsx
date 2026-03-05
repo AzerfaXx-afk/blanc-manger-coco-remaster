@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Trophy, Clock, Check, XCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Trophy, Clock, Check, XCircle, Crown } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import cardsData from '../data/cards.json';
 import { playWin, playPodium, stopMusic, startMusic, playBop } from '../utils/audio';
@@ -60,6 +60,8 @@ const Game = () => {
     const [winner, setWinner] = useState(null);
     const [lastWinner, setLastWinner] = useState(null); // Used for +1 animation
     const [showEndConfirm, setShowEndConfirm] = useState(false);
+    const [flippedCards, setFlippedCards] = useState({}); // Track which cards in hand have been flipped
+    const [flippedSubmissions, setFlippedSubmissions] = useState({}); // Track flipped voting submissions
 
     const maxSelections = Math.max(1, currentBlackCard.pick);
 
@@ -111,15 +113,31 @@ const Game = () => {
 
     // --- Actions ---
 
+    const flipCard = (cardId) => {
+        playBop();
+        setFlippedCards(prev => ({ ...prev, [cardId]: true }));
+    };
+
     const toggleSelection = (card) => {
         if (phase !== PHASES.PLAYING) return;
-        playBop();
 
+        // If card hasn't been flipped yet, flip it first
+        if (!flippedCards[card.id]) {
+            flipCard(card.id);
+            return;
+        }
+
+        playBop();
         if (mySelection.find(c => c.id === card.id)) {
             setMySelection(mySelection.filter(c => c.id !== card.id));
         } else if (mySelection.length < maxSelections) {
             setMySelection([...mySelection, card]);
         }
+    };
+
+    const flipSubmission = (subId) => {
+        playBop();
+        setFlippedSubmissions(prev => ({ ...prev, [subId]: true }));
     };
 
     const handleConfirmPlay = (finalSelection = mySelection) => {
@@ -132,21 +150,11 @@ const Game = () => {
     };
 
     const handleConfirmVote = (submissionId) => {
+        if (!isHost) return; // Only the boss can vote
         setVotedFor(submissionId);
 
-        // Simulate bot votes and determine winner
-        const allVotes = [submissionId]; // My vote
-        // Bots vote randomly but not for themselves (simplified: just totally random for now)
-        allVotes.push(submissions[Math.floor(Math.random() * submissions.length)].id);
-        allVotes.push(submissions[Math.floor(Math.random() * submissions.length)].id);
-
-        // Count votes
-        const counts = {};
-        allVotes.forEach(id => counts[id] = (counts[id] || 0) + 1);
-
-        // Find winner submission id
-        let winningId = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-        const winningSubmission = submissions.find(s => s.id === winningId);
+        // The boss chooses the winner directly
+        const winningSubmission = submissions.find(s => s.id === submissionId);
 
         setWinner(winningSubmission.ownerId);
         setLastWinner(winningSubmission.ownerId); // Trigger +1 anim
@@ -169,6 +177,8 @@ const Game = () => {
         setSubmissions([]);
         setVotedFor(null);
         setWinner(null);
+        setFlippedCards({});
+        setFlippedSubmissions({});
         setPhase(PHASES.DEALING);
     };
 
@@ -461,7 +471,7 @@ const Game = () => {
                     {phase === PHASES.VOTING ? 'RÉPONSES ANONYMES' : phase === PHASES.END_GAME ? 'RÉSULTATS FINAUX' : 'VOTRE MAIN (11 CARTES)'}
                 </div>
 
-                {/* Hand View - 2 Column Vertical Grid */}
+                {/* Hand View - 2 Column Vertical Grid with Flip Cards */}
                 {(phase === PHASES.DEALING || phase === PHASES.PLAYING || phase === PHASES.WAITING) && (
                     <div className="hand-container" style={{
                         display: 'grid',
@@ -476,50 +486,89 @@ const Game = () => {
                     }}>
                         <AnimatePresence>
                             {hand.map((card, index) => {
-                                const isSelected = mySelection.find(c => c.id === card.id);
+                                const isSelected = !!mySelection.find(c => c.id === card.id);
                                 const selectionIndex = mySelection.findIndex(c => c.id === card.id);
+                                const isCardFlipped = !!flippedCards[card.id];
 
                                 return (
                                     <motion.div
                                         key={card.id}
-                                        initial={phase === PHASES.DEALING ? { opacity: 0, y: 30, scale: 0.9 } : { opacity: 1, y: 0, scale: 1 }}
+                                        initial={phase === PHASES.DEALING ? { opacity: 0, y: 50, scale: 0.8, rotateZ: 5 } : { opacity: 1, y: 0, scale: 1 }}
                                         animate={{
                                             opacity: phase === PHASES.WAITING && !isSelected ? 0.3 : 1,
-                                            scale: isSelected ? 1.03 : 1
+                                            y: 0, scale: 1, rotateZ: 0
                                         }}
-                                        exit={{ opacity: 0, scale: 0.5 }}
+                                        exit={{ opacity: 0, scale: 0.5, y: -20 }}
                                         transition={{
-                                            delay: phase === PHASES.DEALING ? index * 0.04 : 0,
+                                            delay: phase === PHASES.DEALING ? index * 0.06 : 0,
                                             type: 'spring', stiffness: 300, damping: 20
                                         }}
                                         onClick={() => toggleSelection(card)}
-                                        className="white-card"
+                                        className="card-container white-card"
                                         style={{
-                                            background: isSelected ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
-                                            borderRadius: '14px', padding: '12px',
-                                            border: isSelected ? '2px solid var(--accent-pink)' : '1px solid rgba(255,255,255,0.1)',
-                                            boxShadow: isSelected ? '0 0 15px rgba(255,0,127,0.4)' : 'none',
                                             cursor: phase === PHASES.PLAYING ? 'pointer' : 'default',
-                                            display: 'flex', flexDirection: 'column',
-                                            position: 'relative',
-                                            minHeight: '110px'
+                                            minHeight: '130px',
+                                            position: 'relative'
                                         }}
                                     >
-                                        <div className="white-card-text" style={{ flex: 1, fontSize: '0.8rem', fontWeight: '700', lineHeight: '1.3', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {card.text}
-                                        </div>
-                                        <div style={{ fontSize: '0.45rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'auto', textAlign: 'center', paddingTop: '4px' }}>
-                                            Au Fond Du Trou
-                                        </div>
-                                        {isSelected && (
-                                            <div style={{
-                                                position: 'absolute', top: '-8px', right: '-8px', background: 'var(--accent-pink)',
-                                                width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                fontWeight: 'bold', fontSize: '0.7rem'
-                                            }}>
-                                                {selectionIndex + 1}
+                                        <div className={`card-inner ${isCardFlipped ? 'flipped' : ''}`} style={{ width: '100%', height: '100%', minHeight: '130px' }}>
+                                            {/* Card Back */}
+                                            <div className="card-face card-back card-back-answer" style={{ minHeight: '130px' }}>
+                                                <div className="card-back-pattern" style={{ color: '#000' }} />
+                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 1 }}>
+                                                    <div style={{
+                                                        width: '32px', height: '32px', borderRadius: '8px',
+                                                        background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        boxShadow: '0 4px 12px rgba(0,229,255,0.3)'
+                                                    }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="white" opacity="0.9">
+                                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-7v4h4l-5 7z" />
+                                                        </svg>
+                                                    </div>
+                                                    <span style={{ fontSize: '0.4rem', fontWeight: '900', letterSpacing: '1.5px', color: 'rgba(0,0,0,0.3)' }}>AU FOND DU TROU</span>
+                                                </div>
+                                                {/* Corner marks */}
+                                                <div style={{ position: 'absolute', top: '6px', left: '6px', width: '10px', height: '10px', borderTop: '2px solid rgba(0,0,0,0.1)', borderLeft: '2px solid rgba(0,0,0,0.1)', borderRadius: '2px 0 0 0' }} />
+                                                <div style={{ position: 'absolute', bottom: '6px', right: '6px', width: '10px', height: '10px', borderBottom: '2px solid rgba(0,0,0,0.1)', borderRight: '2px solid rgba(0,0,0,0.1)', borderRadius: '0 0 2px 0' }} />
                                             </div>
-                                        )}
+
+                                            {/* Card Front */}
+                                            <div
+                                                className={`card-face card-front card-front-answer ${isSelected ? 'card-selected' : ''}`}
+                                                style={{ minHeight: '130px', padding: '12px' }}
+                                            >
+                                                <div className="white-card-text" style={{
+                                                    flex: 1, fontSize: '0.8rem', fontWeight: '700',
+                                                    lineHeight: '1.3', textAlign: 'center',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                }}>
+                                                    {card.text}
+                                                </div>
+                                                <div style={{
+                                                    fontSize: '0.4rem', color: 'rgba(0,0,0,0.2)', textTransform: 'uppercase',
+                                                    letterSpacing: '1px', marginTop: 'auto', textAlign: 'center', paddingTop: '4px',
+                                                    borderTop: '1px solid rgba(0,0,0,0.06)', display: 'flex',
+                                                    justifyContent: 'space-between', width: '100%'
+                                                }}>
+                                                    <span>AU FOND</span>
+                                                    <span>DU TROU</span>
+                                                </div>
+
+                                                {isSelected && (
+                                                    <div style={{
+                                                        position: 'absolute', top: '-6px', right: '-6px',
+                                                        background: 'linear-gradient(135deg, var(--accent-pink), #cc0066)',
+                                                        width: '24px', height: '24px', borderRadius: '50%',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontWeight: '900', fontSize: '0.7rem', color: '#fff',
+                                                        boxShadow: '0 2px 8px rgba(255,0,127,0.5)', zIndex: 5
+                                                    }}>
+                                                        {selectionIndex + 1}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </motion.div>
                                 );
                             })}
@@ -527,33 +576,85 @@ const Game = () => {
                     </div>
                 )}
 
-                {/* Voting View */}
+                {/* Voting View — Boss Only */}
                 {phase === PHASES.VOTING && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', padding: '0 20px', overflowY: 'auto' }}>
-                        {submissions.map((sub) => {
-                            const isMySub = sub.ownerId === 'me';
-                            return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '0 15px', overflowY: 'auto', flex: 1 }}>
+                        {isHost ? (
+                            <>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '4px' }}>
+                                    <Crown size={16} color="var(--accent-pink)" />
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--accent-pink)', fontWeight: '800', letterSpacing: '1px' }}>
+                                        VOUS ÊTES LE BOSS — CHOISISSEZ LA MEILLEURE
+                                    </span>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    {submissions.map((sub) => {
+                                        const isMySub = sub.ownerId === 'me';
+                                        const isSubFlipped = !!flippedSubmissions[sub.id];
+                                        return (
+                                            <motion.div
+                                                key={sub.id}
+                                                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                className="card-container"
+                                                onClick={() => {
+                                                    if (!isSubFlipped) {
+                                                        flipSubmission(sub.id);
+                                                    } else if (!isMySub) {
+                                                        handleConfirmVote(sub.id);
+                                                    }
+                                                }}
+                                                style={{
+                                                    minHeight: '130px',
+                                                    cursor: isMySub && isSubFlipped ? 'not-allowed' : 'pointer',
+                                                    opacity: isMySub && isSubFlipped ? 0.5 : 1
+                                                }}
+                                            >
+                                                <div className={`card-inner ${isSubFlipped ? 'flipped' : ''}`} style={{ width: '100%', height: '100%', minHeight: '130px' }}>
+                                                    {/* Back */}
+                                                    <div className="card-face card-back card-back-answer" style={{ minHeight: '130px' }}>
+                                                        <div className="card-back-pattern" style={{ color: '#000' }} />
+                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 1 }}>
+                                                            <span style={{ fontSize: '0.6rem', fontWeight: '900', color: 'rgba(0,0,0,0.3)' }}>?</span>
+                                                            <span style={{ fontSize: '0.4rem', fontWeight: '800', letterSpacing: '1px', color: 'rgba(0,0,0,0.25)' }}>RETOURNER</span>
+                                                        </div>
+                                                    </div>
+                                                    {/* Front */}
+                                                    <div className="card-face card-front card-front-answer" style={{ minHeight: '130px', padding: '12px' }}>
+                                                        <div style={{ flex: 1, fontSize: '0.85rem', fontWeight: '800', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: '1.3' }}>
+                                                            {sub.cards.map(c => c.text).join(' / ')}
+                                                        </div>
+                                                        {isMySub && (
+                                                            <span style={{ fontSize: '0.6rem', color: 'rgba(0,168,255,0.6)', fontWeight: '700', position: 'absolute', bottom: '8px' }}>
+                                                                VOTRE CARTE
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        ) : (
+                            <div style={{
+                                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                justifyContent: 'center', flex: 1, gap: '15px', padding: '30px'
+                            }}>
+                                <Crown size={40} color="var(--accent-pink)" />
+                                <div style={{ fontSize: '1.1rem', fontWeight: '900', color: '#fff', textAlign: 'center' }}>
+                                    LE BOSS CHOISIT...
+                                </div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                                    Le maître de la manche lit les réponses et choisit sa préférée
+                                </div>
                                 <motion.div
-                                    key={sub.id}
-                                    initial={{ opacity: 0, x: -50 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    onClick={() => !isMySub && handleConfirmVote(sub.id)}
-                                    style={{
-                                        background: 'rgba(255,255,255,0.05)',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: '12px', padding: '15px',
-                                        cursor: isMySub ? 'not-allowed' : 'pointer',
-                                        opacity: isMySub ? 0.5 : 1,
-                                        display: 'flex', alignItems: 'center', gap: '15px'
-                                    }}
-                                >
-                                    <div style={{ flex: 1, fontSize: '0.95rem', fontWeight: '800', textAlign: 'center' }}>
-                                        {sub.cards.map(c => c.text).join(' / ')}
-                                    </div>
-                                    {isMySub && <span style={{ fontSize: '0.7rem', color: 'var(--accent-cyan)', textAlign: 'center' }}>(VOTRE CARTE)</span>}
-                                </motion.div>
-                            );
-                        })}
+                                    animate={{ scale: [1, 1.2, 1] }}
+                                    transition={{ repeat: Infinity, duration: 1.5 }}
+                                    style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--accent-pink)', marginTop: '10px' }}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
 

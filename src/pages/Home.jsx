@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Share2, Users, Layers, Menu, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Share2, Users, Layers, Menu, User, ScanLine, X } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
 import MenuOverlay from '../components/MenuOverlay';
 import useRoom from '../hooks/useRoom';
 
@@ -11,6 +12,9 @@ const Home = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [joinError, setJoinError] = useState('');
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
+    const scannerRef = useRef(null);
+    const scannerInstanceRef = useRef(null);
     const { createRoom, joinRoom } = useRoom();
 
     const handleCreate = async () => {
@@ -22,18 +26,81 @@ const Home = () => {
         }
     };
 
-    const handleJoin = async () => {
-        if (code.length < 4) return;
+    const handleJoin = async (joinCode) => {
+        const c = joinCode || code;
+        if (c.length < 4) return;
         setLoading(true);
         setJoinError('');
-        const success = await joinRoom(code);
+        const success = await joinRoom(c);
         setLoading(false);
         if (success) {
-            navigate('/lobby', { state: { code: code.toUpperCase(), isHost: false } });
+            navigate('/lobby', { state: { code: c.toUpperCase(), isHost: false } });
         } else {
             setJoinError('Room introuvable ou partie déjà commencée');
         }
     };
+
+    // QR Scanner logic
+    const extractCodeFromScan = (decodedText) => {
+        // Try to extract ?code=XXXX from URL
+        try {
+            const url = new URL(decodedText);
+            const codeParam = url.searchParams.get('code');
+            if (codeParam && codeParam.length >= 4) return codeParam.toUpperCase();
+        } catch {
+            // Not a URL — try raw code
+        }
+        // If raw 4-char code
+        if (decodedText.length >= 4) return decodedText.trim().toUpperCase().slice(0, 4);
+        return null;
+    };
+
+    const openScanner = () => {
+        setIsScannerOpen(true);
+    };
+
+    const closeScanner = () => {
+        if (scannerInstanceRef.current) {
+            scannerInstanceRef.current.stop().catch(() => { });
+            scannerInstanceRef.current = null;
+        }
+        setIsScannerOpen(false);
+    };
+
+    useEffect(() => {
+        if (isScannerOpen && scannerRef.current) {
+            const html5QrCode = new Html5Qrcode("qr-reader");
+            scannerInstanceRef.current = html5QrCode;
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 220, height: 220 } },
+                (decodedText) => {
+                    const extractedCode = extractCodeFromScan(decodedText);
+                    if (extractedCode) {
+                        html5QrCode.stop().catch(() => { });
+                        scannerInstanceRef.current = null;
+                        setIsScannerOpen(false);
+                        setCode(extractedCode);
+                        // Auto-join
+                        handleJoin(extractedCode);
+                    }
+                },
+                () => { } // ignore errors (no QR found in frame)
+            ).catch((err) => {
+                console.error("QR Scanner error:", err);
+                setJoinError("Impossible d'accéder à la caméra");
+                setIsScannerOpen(false);
+            });
+        }
+
+        return () => {
+            if (scannerInstanceRef.current) {
+                scannerInstanceRef.current.stop().catch(() => { });
+                scannerInstanceRef.current = null;
+            }
+        };
+    }, [isScannerOpen]);
 
     const profileImage = localStorage.getItem('profile_image') || null;
 
@@ -204,19 +271,22 @@ const Home = () => {
                     {loading ? 'CRÉATION...' : 'CRÉER UNE PARTIE'}
                 </motion.button>
 
-                <div style={{ position: 'relative', textAlign: 'center', margin: '0' }}>
-                    <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
-                    <span style={{
-                        background: '#161923',
-                        padding: '0 15px',
-                        color: 'rgba(255,255,255,0.4)',
-                        fontSize: '0.75rem',
-                        letterSpacing: '2px',
-                        position: 'relative',
-                        fontWeight: 'bold'
-                    }}>
-                        OU REJOINDRE
-                    </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '2px 0' }}>
+                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,0,127,0.4), transparent)' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--accent-pink)', boxShadow: '0 0 8px var(--accent-pink)' }} />
+                        <span style={{
+                            color: 'rgba(255,255,255,0.5)',
+                            fontSize: '0.65rem',
+                            letterSpacing: '3px',
+                            fontWeight: '800',
+                            textTransform: 'uppercase'
+                        }}>
+                            OU REJOINDRE
+                        </span>
+                        <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--accent-pink)', boxShadow: '0 0 8px var(--accent-pink)' }} />
+                    </div>
+                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,0,127,0.4), transparent)' }} />
                 </div>
 
                 <div>
@@ -250,7 +320,7 @@ const Home = () => {
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={handleJoin}
+                            onClick={() => handleJoin()}
                             disabled={code.length < 4}
                             style={{
                                 flexShrink: 0,
@@ -270,6 +340,27 @@ const Home = () => {
                             REJOINDRE
                         </motion.button>
                     </div>
+
+                    {/* QR Scanner Button */}
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={openScanner}
+                        style={{
+                            width: '100%', marginTop: '10px', padding: '12px',
+                            borderRadius: '12px', display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', gap: '8px',
+                            background: 'rgba(255,255,255,0.04)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            color: 'var(--accent-cyan)', fontSize: '0.8rem',
+                            fontWeight: '700', cursor: 'pointer', letterSpacing: '1px',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <ScanLine size={18} />
+                        SCANNER UN QR CODE
+                    </motion.button>
+
                     {joinError && (
                         <div style={{ color: '#ff4444', fontSize: '0.7rem', marginTop: '6px', textAlign: 'center' }}>
                             {joinError}
@@ -294,24 +385,86 @@ const Home = () => {
                 }}
             >
                 <h3 style={{ textAlign: 'center', fontSize: '0.7rem', marginBottom: '10px', letterSpacing: '1px', fontWeight: 'bold' }}>COMMENT ÇA MARCHE</h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '30%' }}>
-                        <Share2 color="var(--accent-cyan)" size={20} />
-                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>1. Créer</div>
+                <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center', width: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: 1 }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(0,229,255,0.1)', border: '1px solid rgba(0,229,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Share2 color="var(--accent-cyan)" size={18} />
+                        </div>
+                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold', marginTop: '2px' }}>1. Créer</div>
                         <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>Partagez code</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: 1 }}>
-                        <Users color="var(--accent-purple)" size={20} />
-                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>2. Les potes</div>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(157,0,255,0.1)', border: '1px solid rgba(157,0,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Users color="var(--accent-purple)" size={18} />
+                        </div>
+                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold', marginTop: '2px' }}>2. Les potes</div>
                         <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>Entrez code</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: 1 }}>
-                        <Layers color="var(--accent-pink)" size={20} />
-                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>3. Jouez</div>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,0,127,0.1)', border: '1px solid rgba(255,0,127,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Layers color="var(--accent-pink)" size={18} />
+                        </div>
+                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold', marginTop: '2px' }}>3. Jouez</div>
                         <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>Lâchez-vous</div>
                     </div>
                 </div>
             </motion.div>
+
+            {/* QR Scanner Modal */}
+            <AnimatePresence>
+                {isScannerOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                            background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                            zIndex: 200, padding: '20px'
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                            style={{
+                                width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column',
+                                alignItems: 'center', gap: '20px'
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                <h2 style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--accent-cyan)', letterSpacing: '1px' }}>
+                                    SCANNER QR CODE
+                                </h2>
+                                <X size={24} color="var(--text-muted)" onClick={closeScanner} style={{ cursor: 'pointer' }} />
+                            </div>
+
+                            <div
+                                ref={scannerRef}
+                                id="qr-reader"
+                                style={{
+                                    width: '100%', maxWidth: '300px', borderRadius: '16px',
+                                    overflow: 'hidden', border: '2px solid rgba(0, 229, 255, 0.3)',
+                                    boxShadow: '0 0 30px rgba(0, 229, 255, 0.15)'
+                                }}
+                            />
+
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center' }}>
+                                Dirigez la caméra vers le QR code d'invitation
+                            </p>
+
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={closeScanner}
+                                style={{
+                                    padding: '12px 30px', borderRadius: '12px',
+                                    background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                                    color: '#fff', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem'
+                                }}
+                            >
+                                ANNULER
+                            </motion.button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
         </div>
     );
