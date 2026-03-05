@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Trophy, Clock, Check, XCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import cardsData from '../data/cards.json';
 import { playWin, playPodium, stopMusic, startMusic, playBop } from '../utils/audio';
+import useRoom from '../hooks/useRoom';
 
 const PHASES = {
     DEALING: 'DEALING',
@@ -21,8 +22,20 @@ const BOTS = [
 
 const Game = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const roomCode = location.state?.code || null;
 
-    // Profile data from localStorage
+    // Firebase room data
+    const { players: firebasePlayers, playerId, joinRoom } = useRoom();
+
+    // Connect to room on mount
+    useEffect(() => {
+        if (roomCode) {
+            joinRoom(roomCode);
+        }
+    }, []);
+
+    // Profile data (self fallback)
     const myPseudo = localStorage.getItem('profile_pseudo') || 'Vous';
     const myAvatar = localStorage.getItem('profile_image') || null;
 
@@ -256,9 +269,15 @@ const Game = () => {
                     }}>
                         {(() => {
                             const getPlayerInfo = (id) => {
-                                if (id === 'me') return { name: myPseudo.toUpperCase(), avatar: myAvatar, color: 'var(--accent-cyan)' };
+                                // Check Firebase data first
+                                if (firebasePlayers && firebasePlayers[id]) {
+                                    const fp = firebasePlayers[id];
+                                    return { name: fp.name.toUpperCase(), avatar: fp.avatar || null, color: id === playerId ? 'var(--accent-cyan)' : '#ff007f' };
+                                }
+                                if (id === 'me' || id === playerId) return { name: myPseudo.toUpperCase(), avatar: myAvatar, color: 'var(--accent-cyan)' };
                                 const bot = BOTS.find(b => b.id === id);
-                                return { name: bot.name.toUpperCase(), avatar: null, color: bot.color };
+                                if (bot) return { name: bot.name.toUpperCase(), avatar: null, color: bot.color };
+                                return { name: id.toUpperCase(), avatar: null, color: '#888' };
                             };
 
                             const sortedScores = Object.entries(scores)
@@ -570,9 +589,14 @@ const Game = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', flex: 1, padding: '20px 0', width: '100%', overflowY: 'auto' }}>
                         {(() => {
                             const getPlayerInfo = (id) => {
-                                if (id === 'me') return { name: myPseudo, avatar: myAvatar };
+                                if (firebasePlayers && firebasePlayers[id]) {
+                                    const fp = firebasePlayers[id];
+                                    return { name: fp.name, avatar: fp.avatar || null };
+                                }
+                                if (id === 'me' || id === playerId) return { name: myPseudo, avatar: myAvatar };
                                 const bot = BOTS.find(b => b.id === id);
-                                return { name: bot.name, avatar: null };
+                                if (bot) return { name: bot.name, avatar: null };
+                                return { name: id, avatar: null };
                             };
 
                             const sortedScores = Object.entries(scores)
