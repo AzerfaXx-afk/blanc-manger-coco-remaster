@@ -68,13 +68,13 @@ const Rules = () => {
     return (
         <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100dvh',
-            overflow: 'hidden', padding: '20px', maxWidth: '500px', margin: '0 auto',
+            overflow: 'hidden', padding: '12px', maxWidth: '500px', margin: '0 auto',
             fontFamily: "'Inter', sans-serif"
         }}>
             {/* Header */}
             <div style={{
                 display: 'flex', justifyContent: 'space-between', width: '100%',
-                alignItems: 'center', marginBottom: '20px', flexShrink: 0
+                alignItems: 'center', marginBottom: '10px', flexShrink: 0
             }}>
                 <motion.div
                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
@@ -111,11 +111,11 @@ const Rules = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 style={{
-                    width: '100%', padding: '10px 16px', borderRadius: '12px',
+                    width: '100%', padding: '8px 12px', borderRadius: '10px',
                     background: 'linear-gradient(135deg, rgba(255,0,127,0.12) 0%, rgba(255,0,127,0.04) 100%)',
                     border: '1px solid rgba(255,0,127,0.2)',
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    marginBottom: '15px', flexShrink: 0
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    marginBottom: '8px', flexShrink: 0
                 }}
             >
                 <AlertTriangle size={16} color="var(--accent-pink)" />
@@ -131,8 +131,8 @@ const Rules = () => {
                 animate="show"
                 style={{
                     width: '100%', flex: 1, overflowY: 'auto',
-                    display: 'flex', flexDirection: 'column', gap: '12px',
-                    paddingBottom: '30px', paddingRight: '4px'
+                    display: 'flex', flexDirection: 'column', gap: '8px',
+                    paddingBottom: '15px', paddingRight: '4px'
                 }}
             >
                 {rulesSections.map((section, index) => {
@@ -142,7 +142,7 @@ const Rules = () => {
                             key={index}
                             variants={itemVariants}
                             style={{
-                                padding: '18px', borderRadius: '16px',
+                                padding: '14px', borderRadius: '14px',
                                 background: section.gradient,
                                 border: `1px solid ${section.border}`,
                                 backdropFilter: 'blur(10px)',
@@ -173,7 +173,7 @@ const Rules = () => {
                                 marginBottom: '10px'
                             }}>
                                 <div style={{
-                                    width: '32px', height: '32px', borderRadius: '10px',
+                                    width: '28px', height: '28px', borderRadius: '8px',
                                     background: `linear-gradient(135deg, ${section.color}33, ${section.color}11)`,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     border: `1px solid ${section.border}`,
@@ -182,7 +182,7 @@ const Rules = () => {
                                     <Icon size={16} color={section.color} />
                                 </div>
                                 <h3 style={{
-                                    margin: 0, fontSize: '0.85rem', fontWeight: '900',
+                                    margin: 0, fontSize: '0.75rem', fontWeight: '900',
                                     color: section.color, letterSpacing: '1px'
                                 }}>
                                     {section.title}
@@ -192,8 +192,8 @@ const Rules = () => {
                             {/* Content */}
                             {section.content && (
                                 <p style={{
-                                    color: 'rgba(255,255,255,0.75)', fontSize: '0.8rem',
-                                    lineHeight: '1.6', margin: 0
+                                    color: 'rgba(255,255,255,0.75)', fontSize: '0.73rem',
+                                    lineHeight: '1.5', margin: 0
                                 }}>
                                     {section.content}
                                 </p>

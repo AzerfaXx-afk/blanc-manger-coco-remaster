@@ -733,7 +733,7 @@ const Game = () => {
 
                 {/* End Game / Podium View */}
                 {phase === PHASES.END_GAME && (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', flex: 1, padding: '20px 0', width: '100%', overflowY: 'auto' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', flex: 1, padding: '10px 15px', width: '100%', overflowY: 'auto' }}>
                         {(() => {
                             const podiumScores = Object.entries(scores)
                                 .map(([id, score]) => ({ id, ...getPlayerInfo(id), score }))
@@ -741,60 +741,66 @@ const Game = () => {
 
                             const top3 = podiumScores.slice(0, 3);
                             const remaining = podiumScores.slice(3);
+                            const medals = ['🥇', '🥈', '🥉'];
+                            const podiumColors = [
+                                { bg: 'linear-gradient(180deg, #FFD700 0%, #B8860B 100%)', glow: 'rgba(255,215,0,0.4)', accent: '#FFD700' },
+                                { bg: 'linear-gradient(180deg, #D8D8D8 0%, #A0A0A0 100%)', glow: 'rgba(200,200,200,0.2)', accent: '#C0C0C0' },
+                                { bg: 'linear-gradient(180deg, #CD7F32 0%, #8B5E3C 100%)', glow: 'rgba(205,127,50,0.2)', accent: '#CD7F32' }
+                            ];
 
                             return (
                                 <>
                                     {/* Podium Top 3 */}
-                                    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '15px', height: '180px', marginBottom: '30px', width: '100%' }}>
+                                    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '10px', height: '200px', marginBottom: '20px', width: '100%', paddingTop: '50px' }}>
                                         {[1, 0, 2].map((idx) => {
                                             const player = top3[idx];
                                             if (!player) return null;
                                             const isFirst = idx === 0;
                                             const isSecond = idx === 1;
+                                            const heights = [170, 130, 100];
+                                            const widths = ['90px', '80px', '80px'];
+                                            const pc = podiumColors[idx];
+
                                             return (
                                                 <motion.div
                                                     key={player.id}
                                                     initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: isFirst ? 160 : isSecond ? 120 : 90, opacity: 1 }}
-                                                    transition={{ duration: 0.8, delay: isFirst ? 1.0 : isSecond ? 0.5 : 0 }}
+                                                    animate={{ height: heights[idx], opacity: 1 }}
+                                                    transition={{ duration: 0.8, delay: isFirst ? 1.0 : isSecond ? 0.5 : 0, type: 'spring', stiffness: 100 }}
                                                     style={{
-                                                        width: '85px',
-                                                        background: isFirst ? 'linear-gradient(180deg, #FFD700 0%, #D4AF37 100%)' :
-                                                            isSecond ? 'linear-gradient(180deg, #E0E0E0 0%, #B0B0B0 100%)' :
-                                                                'linear-gradient(180deg, #CD7F32 0%, #A0522D 100%)',
-                                                        borderRadius: '16px 16px 0 0',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'flex-start',
-                                                        paddingTop: '15px',
-                                                        boxShadow: isFirst ? '0 -15px 40px rgba(255,215,0,0.4), inset 0 2px 10px rgba(255,255,255,0.8)' : 'inset 0 2px 10px rgba(255,255,255,0.4)',
-                                                        border: '1px solid rgba(255,255,255,0.3)',
-                                                        borderBottom: 'none',
-                                                        position: 'relative'
+                                                        width: widths[idx],
+                                                        background: pc.bg,
+                                                        borderRadius: '14px 14px 0 0',
+                                                        display: 'flex', flexDirection: 'column',
+                                                        alignItems: 'center', justifyContent: 'flex-start',
+                                                        paddingTop: '12px',
+                                                        boxShadow: isFirst
+                                                            ? `0 -10px 30px ${pc.glow}, inset 0 2px 8px rgba(255,255,255,0.7), 0 0 40px ${pc.glow}`
+                                                            : `inset 0 2px 8px rgba(255,255,255,0.3)`,
+                                                        border: '1px solid rgba(255,255,255,0.25)',
+                                                        borderBottom: 'none', position: 'relative'
                                                     }}
                                                 >
-                                                    <div style={{
-                                                        position: 'absolute', top: '-50px',
-                                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'
-                                                    }}>
+                                                    <div style={{ position: 'absolute', top: '-55px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+                                                        <div style={{ fontSize: '1.2rem', lineHeight: 1 }}>{medals[idx]}</div>
                                                         <div style={{
-                                                            width: '30px', height: '30px', borderRadius: '50%',
-                                                            background: player.avatar ? `url(${player.avatar}) center/cover` : `linear-gradient(135deg, ${isFirst ? '#FFD700' : isSecond ? '#C0C0C0' : '#CD7F32'}, rgba(255,255,255,0.3))`,
-                                                            border: '2px solid rgba(255,255,255,0.6)', overflow: 'hidden',
+                                                            width: '36px', height: '36px', borderRadius: '50%',
+                                                            background: player.avatar ? `url(${player.avatar}) center/cover` : `linear-gradient(135deg, ${pc.accent}, rgba(255,255,255,0.3))`,
+                                                            border: `2.5px solid ${pc.accent}`, overflow: 'hidden',
                                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            fontSize: '0.6rem', fontWeight: '900', color: '#fff'
+                                                            fontSize: '0.7rem', fontWeight: '900', color: '#fff',
+                                                            boxShadow: `0 0 12px ${pc.glow}`
                                                         }}>
                                                             {!player.avatar && player.name.charAt(0).toUpperCase()}
                                                         </div>
-                                                        <span style={{ fontSize: '0.7rem', fontWeight: 'bold', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '8px', whiteSpace: 'nowrap' }}>
+                                                        <span style={{ fontSize: '0.65rem', fontWeight: 'bold', background: 'rgba(0,0,0,0.6)', padding: '2px 8px', borderRadius: '8px', whiteSpace: 'nowrap', maxWidth: '85px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                             {player.name}
                                                         </span>
                                                     </div>
-                                                    <div style={{ fontWeight: '900', fontSize: '1.8rem', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                                                    <div style={{ fontWeight: '900', fontSize: '2rem', color: '#fff', textShadow: '0 2px 6px rgba(0,0,0,0.4)', lineHeight: 1 }}>
                                                         {idx + 1}
                                                     </div>
-                                                    <div style={{ fontSize: '0.8rem', fontWeight: '900', color: 'rgba(0,0,0,0.5)', marginTop: 'auto', marginBottom: '10px' }}>
+                                                    <div style={{ fontSize: '0.75rem', fontWeight: '900', color: 'rgba(0,0,0,0.5)', marginTop: 'auto', marginBottom: '8px', background: 'rgba(0,0,0,0.1)', padding: '2px 8px', borderRadius: '8px' }}>
                                                         {player.score} PTS
                                                     </div>
                                                 </motion.div>
@@ -802,26 +808,55 @@ const Game = () => {
                                         })}
                                     </div>
 
-                                    {/* Remaining Players */}
+                                    {/* 4th, 5th+ — Stylish ranking list */}
                                     {remaining.length > 0 && (
-                                        <div style={{ width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                                        <div style={{ width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '15px' }}>
+                                            <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', letterSpacing: '2px', fontWeight: '800', textTransform: 'uppercase', textAlign: 'center', marginBottom: '4px' }}>
+                                                CLASSEMENT COMPLET
+                                            </div>
                                             {remaining.map((player, index) => (
                                                 <motion.div
                                                     key={player.id}
-                                                    initial={{ opacity: 0, x: -50 }}
+                                                    initial={{ opacity: 0, x: -30 }}
                                                     animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: 1.5 + (index * 0.1) }}
+                                                    transition={{ delay: 1.5 + (index * 0.12) }}
                                                     style={{
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                                        background: 'rgba(255,255,255,0.05)', padding: '15px 20px', borderRadius: '12px',
-                                                        border: '1px solid rgba(255,255,255,0.1)'
+                                                        display: 'flex', alignItems: 'center', gap: '12px',
+                                                        background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+                                                        padding: '12px 16px', borderRadius: '14px',
+                                                        border: '1px solid rgba(255,255,255,0.08)',
+                                                        backdropFilter: 'blur(5px)'
                                                     }}
                                                 >
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                                        <span style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--text-muted)' }}>{index + 4}.</span>
-                                                        <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{player.name}</span>
+                                                    <div style={{
+                                                        width: '28px', height: '28px', borderRadius: '8px',
+                                                        background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03))',
+                                                        border: '1px solid rgba(255,255,255,0.1)',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontWeight: '900', fontSize: '0.85rem', color: 'var(--text-muted)', flexShrink: 0
+                                                    }}>
+                                                        {index + 4}
                                                     </div>
-                                                    <div style={{ fontWeight: '900', color: 'var(--accent-cyan)' }}>{player.score} PTS</div>
+                                                    <div style={{
+                                                        width: '28px', height: '28px', borderRadius: '50%',
+                                                        background: player.avatar ? `url(${player.avatar}) center/cover` : 'linear-gradient(135deg, var(--accent-cyan), rgba(255,255,255,0.2))',
+                                                        border: '1.5px solid rgba(255,255,255,0.2)',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '0.55rem', fontWeight: '900', color: '#fff', overflow: 'hidden', flexShrink: 0
+                                                    }}>
+                                                        {!player.avatar && player.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <span style={{ fontWeight: '700', fontSize: '0.9rem', color: '#fff', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        {player.name}
+                                                    </span>
+                                                    <div style={{
+                                                        background: 'linear-gradient(135deg, rgba(0,229,255,0.15), rgba(0,229,255,0.05))',
+                                                        border: '1px solid rgba(0,229,255,0.2)',
+                                                        padding: '4px 10px', borderRadius: '10px',
+                                                        fontWeight: '900', fontSize: '0.8rem', color: 'var(--accent-cyan)', flexShrink: 0
+                                                    }}>
+                                                        {player.score} <span style={{ fontSize: '0.6rem', opacity: 0.7 }}>PTS</span>
+                                                    </div>
                                                 </motion.div>
                                             ))}
                                         </div>
@@ -838,11 +873,11 @@ const Game = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={handleExit}
                             style={{
-                                marginTop: 'auto',
-                                padding: '18px 40px', borderRadius: '30px', fontSize: '1.1rem', fontWeight: '900',
+                                marginTop: 'auto', marginBottom: '10px',
+                                padding: '16px 36px', borderRadius: '30px', fontSize: '1rem', fontWeight: '900',
                                 background: 'linear-gradient(135deg, var(--accent-pink) 0%, #cc0066 100%)',
                                 color: '#fff', border: 'none', cursor: 'pointer', textTransform: 'uppercase',
-                                boxShadow: '0 10px 25px rgba(255, 0, 127, 0.4)'
+                                boxShadow: '0 8px 20px rgba(255, 0, 127, 0.4)'
                             }}
                         >
                             RETOURNER AU LOBBY
