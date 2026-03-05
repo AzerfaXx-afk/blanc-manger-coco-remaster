@@ -22,7 +22,7 @@ const Game = () => {
     const {
         players: firebasePlayers, gameState, playerId, isHost,
         joinRoom, submitCards, bossVote, nextRound: firebaseNextRound,
-        endGame: firebaseEndGame, leaveRoom
+        endGame: firebaseEndGame, updateGameState, leaveRoom
     } = useRoom();
 
     // Connect to room on mount
@@ -80,22 +80,12 @@ const Game = () => {
     // Auto-transition: when all non-boss players submitted, move to VOTING (host triggers)
     useEffect(() => {
         if (phase === 'PLAYING' && allSubmitted && isHost) {
-            // Small delay for UX
-            const timer = setTimeout(async () => {
-                const { updateGameState } = await import('../hooks/useRoom').then(m => {
-                    // Can't call hook here, so use Firebase directly
-                    return {};
-                });
-                // Direct Firebase update
-                import('firebase/database').then(({ ref, update }) => {
-                    import('../utils/firebase').then(({ db }) => {
-                        update(ref(db, `rooms/${roomCode}/state`), { phase: 'VOTING' });
-                    });
-                });
+            const timer = setTimeout(() => {
+                updateGameState({ phase: 'VOTING' });
             }, 1500);
             return () => clearTimeout(timer);
         }
-    }, [phase, allSubmitted, isHost, roomCode]);
+    }, [phase, allSubmitted, isHost]);
 
     // Reset local state when round changes
     useEffect(() => {
