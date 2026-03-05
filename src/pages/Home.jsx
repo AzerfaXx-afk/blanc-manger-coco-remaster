@@ -26,16 +26,16 @@ const Home = () => {
             alignItems: 'center',
             height: '100%',
             width: '100%',
-            overflowY: 'auto',
-            padding: '15px 20px',
+            overflow: 'hidden',
+            padding: '10px 20px',
             maxWidth: '500px',
             margin: '0 auto',
             fontFamily: "'Inter', sans-serif"
         }}>
             <MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-            {/* Top Bar matching mockup */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '30px' }}>
+            {/* Top Bar */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '10px', flexShrink: 0 }}>
                 <Menu onClick={() => setIsMenuOpen(true)} color="var(--text-main)" size={28} style={{ cursor: 'pointer' }} />
 
                 <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
@@ -69,12 +69,12 @@ const Home = () => {
             <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                style={{ textAlign: 'center', marginBottom: '25px', marginTop: '10px' }}
+                style={{ textAlign: 'center', marginBottom: '8px', flexShrink: 0 }}
             >
-                <h2 className="home-subtitle" style={{ fontWeight: '800', marginBottom: '10px' }}>
+                <h2 className="home-subtitle" style={{ fontWeight: '800', marginBottom: '4px', fontSize: '1.1rem' }}>
                     Prêt à afficher tes potes ?
                 </h2>
-                <p className="home-desc" style={{ color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                <p className="home-desc" style={{ color: 'var(--text-muted)', lineHeight: '1.3', fontSize: '0.75rem' }}>
                     Le jeu d'humour noir pour les gens irrécupérables
                 </p>
             </motion.div>
@@ -85,7 +85,7 @@ const Home = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2 }}
                 className="hero-card-container"
-                style={{ position: 'relative', flex: '0 0 auto', width: '180px', height: '230px', marginBottom: '20px', marginTop: '5px' }}
+                style={{ position: 'relative', flex: '0 0 auto', width: '140px', height: '180px', marginBottom: '12px', marginTop: '0px' }}
             >
                 {/* Pink outline (bottom right) */}
                 <div style={{
@@ -116,9 +116,9 @@ const Home = () => {
                     <span className="hero-card-text" style={{
                         fontWeight: '900',
                         color: '#fff',
-                        fontSize: '1.2rem',
+                        fontSize: '1rem',
                         letterSpacing: '2px',
-                        lineHeight: '1.3',
+                        lineHeight: '1.2',
                         textAlign: 'center'
                     }}>
                         CARTES<br />POUR<br />GENS<br />ATROCES
@@ -126,11 +126,11 @@ const Home = () => {
                     <span className="hero-card-badge" style={{
                         color: 'rgba(255,255,255,0.6)',
                         position: 'absolute',
-                        bottom: '20px',
+                        bottom: '12px',
                         textTransform: 'uppercase',
                         letterSpacing: '2px',
                         fontWeight: 'bold',
-                        fontSize: '0.6rem'
+                        fontSize: '0.5rem'
                     }}>
                         18+ SEULEMENT
                     </span>
@@ -153,14 +153,14 @@ const Home = () => {
                 className="glass-panel"
                 style={{
                     width: '100%',
-                    padding: '24px',
-                    borderRadius: '20px',
+                    padding: '16px',
+                    borderRadius: '16px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
-                    gap: '20px',
-                    boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-                    flex: '1 0 auto'
+                    gap: '12px',
+                    boxShadow: '0 15px 40px rgba(0,0,0,0.5)',
+                    flexShrink: 0
                 }}
             >
                 <motion.button
@@ -168,8 +168,8 @@ const Home = () => {
                     whileTap={{ scale: 0.98 }}
                     onClick={handleCreate}
                     style={{
-                        width: '100%', padding: '16px', borderRadius: '12px',
-                        fontWeight: '800', fontSize: '1.2rem', cursor: 'pointer',
+                        width: '100%', padding: '14px', borderRadius: '12px',
+                        fontWeight: '800', fontSize: '1rem', cursor: 'pointer',
                         textTransform: 'uppercase', letterSpacing: '1px',
                         background: 'linear-gradient(180deg, rgba(20, 80, 100, 0.6) 0%, rgba(15, 30, 40, 0.8) 100%)',
                         border: '1px solid rgba(0, 229, 255, 0.4)',
@@ -260,29 +260,30 @@ const Home = () => {
                 className="glass-panel"
                 style={{
                     width: '100%',
-                    marginTop: '25px',
-                    marginBottom: '10px',
-                    padding: '20px',
-                    borderRadius: '20px',
-                    boxShadow: '0 15px 40px rgba(0,0,0,0.4)'
+                    marginTop: '12px',
+                    marginBottom: '5px',
+                    padding: '12px 16px',
+                    borderRadius: '16px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+                    flexShrink: 0
                 }}
             >
-                <h3 style={{ textAlign: 'center', fontSize: '0.85rem', marginBottom: '20px', letterSpacing: '1px', fontWeight: 'bold' }}>COMMENT ÇA MARCHE</h3>
+                <h3 style={{ textAlign: 'center', fontSize: '0.7rem', marginBottom: '10px', letterSpacing: '1px', fontWeight: 'bold' }}>COMMENT ÇA MARCHE</h3>
                 <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '30%' }}>
-                        <Share2 color="var(--accent-cyan)" size={24} />
-                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>1. Créer</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Partagez code</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '30%' }}>
+                        <Share2 color="var(--accent-cyan)" size={20} />
+                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>1. Créer</div>
+                        <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>Partagez code</div>
                     </div>
-                    <div className="how-it-works-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                        <Users color="var(--accent-purple)" size={24} />
-                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>2. Les potes</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Entrez code</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: 1 }}>
+                        <Users color="var(--accent-purple)" size={20} />
+                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>2. Les potes</div>
+                        <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>Entrez code</div>
                     </div>
-                    <div className="how-it-works-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                        <Layers color="var(--accent-pink)" size={24} />
-                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>3. Jouez</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Lâchez-vous</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: 1 }}>
+                        <Layers color="var(--accent-pink)" size={20} />
+                        <div style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>3. Jouez</div>
+                        <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>Lâchez-vous</div>
                     </div>
                 </div>
             </motion.div>
