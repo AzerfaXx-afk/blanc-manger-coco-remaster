@@ -39,8 +39,7 @@ const Home = () => {
                 <Menu onClick={() => setIsMenuOpen(true)} color="var(--text-main)" size={28} style={{ cursor: 'pointer' }} />
 
                 <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
-                    <h1 style={{
-                        fontSize: '1.8rem',
+                    <h1 className="home-title" style={{
                         fontWeight: '900',
                         lineHeight: '1',
                         textTransform: 'uppercase',
@@ -72,10 +71,10 @@ const Home = () => {
                 animate={{ y: 0, opacity: 1 }}
                 style={{ textAlign: 'center', marginBottom: '25px', marginTop: '10px' }}
             >
-                <h2 style={{ fontSize: '1.6rem', fontWeight: '800', marginBottom: '10px' }}>
+                <h2 className="home-subtitle" style={{ fontWeight: '800', marginBottom: '10px' }}>
                     Prêt à afficher tes potes ?
                 </h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                <p className="home-desc" style={{ color: 'var(--text-muted)', lineHeight: '1.4' }}>
                     Le jeu d'humour noir pour les gens irrécupérables
                 </p>
             </motion.div>
@@ -85,6 +84,7 @@ const Home = () => {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2 }}
+                className="hero-card-container"
                 style={{ position: 'relative', flex: '0 1 280px', width: '210px', marginBottom: '35px', marginTop: '10px' }}
             >
                 {/* Pink outline (bottom right) */}
@@ -113,9 +113,8 @@ const Home = () => {
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)'
                 }}>
-                    <span style={{
+                    <span className="hero-card-text" style={{
                         fontWeight: '900',
-                        fontSize: '1.7rem',
                         color: '#fff',
                         letterSpacing: '2px',
                         lineHeight: '1.4',
@@ -123,8 +122,7 @@ const Home = () => {
                     }}>
                         CARTES<br />POUR<br />GENS<br />ATROCES
                     </span>
-                    <span style={{
-                        fontSize: '0.75rem',
+                    <span className="hero-card-badge" style={{
                         color: 'rgba(255,255,255,0.6)',
                         position: 'absolute',
                         bottom: '30px',
@@ -270,18 +268,18 @@ const Home = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '30%' }}>
                         <Share2 color="var(--accent-cyan)" size={24} />
-                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>1. Créer salon</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Partagez le code</div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>1. Créer</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Partagez code</div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '30%' }}>
+                    <div className="how-it-works-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
                         <Users color="var(--accent-purple)" size={24} />
-                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>2. Les potes ici</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Entrez le code</div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>2. Les potes</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Entrez code</div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '30%' }}>
+                    <div className="how-it-works-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
                         <Layers color="var(--accent-pink)" size={24} />
-                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>3. Jouez vos cartes</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Mélangez le tout</div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>3. Jouez</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Lâchez-vous</div>
                     </div>
                 </div>
             </motion.div>

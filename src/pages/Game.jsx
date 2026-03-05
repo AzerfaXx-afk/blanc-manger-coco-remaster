@@ -201,9 +201,9 @@ const Game = () => {
 
         return parts.map((part, i, arr) => (
             <React.Fragment key={i}>
-                <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>{part}</span>
+                <span>{part}</span>
                 {i < arr.length - 1 && (
-                    <span style={{ color: 'var(--accent-cyan)', textDecoration: 'underline', padding: '0 5px', display: 'inline-block', verticalAlign: 'middle', fontWeight: '900' }}>
+                    <span style={{ color: 'var(--accent-cyan)', textDecoration: 'underline', padding: '0 5px', fontWeight: '900' }}>
                         {mockCards[i] ? mockCards[i].text.replace('.', '') : '[___]'}
                     </span>
                 )}

@@ -109,13 +109,13 @@ const Lobby = () => {
                     padding: '20px',
                     borderRadius: '16px',
                     textAlign: 'center',
-                    marginBottom: '30px',
+                    marginBottom: '20px',
                     boxShadow: '0 0 20px rgba(0, 240, 255, 0.1)'
                 }}
             >
-                <div style={{ fontSize: '2rem', fontWeight: '900', display: 'flex', justifyContent: 'center', gap: '15px' }}>
+                <div className="lobby-code-title" style={{ fontSize: '2rem', fontWeight: '900', display: 'flex', justifyContent: 'center', gap: '15px' }}>
                     <span>CODE DU SALON :</span>
-                    <span className="text-glow-pink" style={{ color: 'var(--accent-pink)', letterSpacing: '4px' }}>
+                    <span className="text-glow-pink lobby-code-value" style={{ color: 'var(--accent-pink)', letterSpacing: '4px' }}>
                         {roomCode}
                     </span>
                 </div>
@@ -232,13 +232,13 @@ const Lobby = () => {
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="btn-pink"
+                    className="btn-pink lobby-bottom-btn"
                     onClick={handleStart}
                     style={{ width: '100%', padding: '20px', borderRadius: '40px', fontSize: '1.5rem', fontWeight: '900', textTransform: 'uppercase', cursor: 'pointer' }}
                 >
                     LANCER LA PARTIE
                 </motion.button>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', letterSpacing: '1px' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '1px' }}>
                     {readyCount} / {players.length} JOUEURS PRÊTS (MIN. 3)
                 </div>
             </motion.div>
