@@ -19,15 +19,18 @@ const Home = () => {
         }
     };
 
+    const profileImage = localStorage.getItem('profile_image') || null;
+
     return (
         <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'space-evenly',
             height: '100%',
             width: '100%',
             overflow: 'hidden',
-            padding: '10px 20px',
+            padding: '8px 20px',
             maxWidth: '500px',
             margin: '0 auto',
             fontFamily: "'Inter', sans-serif"
@@ -35,7 +38,7 @@ const Home = () => {
             <MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
             {/* Top Bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '10px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', flexShrink: 0 }}>
                 <Menu onClick={() => setIsMenuOpen(true)} color="var(--text-main)" size={28} style={{ cursor: 'pointer' }} />
 
                 <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
@@ -55,13 +58,14 @@ const Home = () => {
                 <div
                     onClick={() => navigate('/profile')}
                     style={{
-                        padding: '8px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                        width: '40px', height: '40px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                         border: '1px solid rgba(0, 229, 255, 0.4)',
-                        background: '#161923',
-                        boxShadow: '0 0 15px rgba(0, 229, 255, 0.15)'
+                        background: profileImage ? `url(${profileImage}) center/cover` : '#161923',
+                        boxShadow: '0 0 15px rgba(0, 229, 255, 0.15)',
+                        overflow: 'hidden'
                     }}
                 >
-                    <User color="var(--accent-cyan)" size={24} />
+                    {!profileImage && <User color="var(--accent-cyan)" size={22} />}
                 </div>
             </div>
 
@@ -69,7 +73,7 @@ const Home = () => {
             <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                style={{ textAlign: 'center', marginBottom: '8px', flexShrink: 0 }}
+                style={{ textAlign: 'center', flexShrink: 0 }}
             >
                 <h2 className="home-subtitle" style={{ fontWeight: '800', marginBottom: '4px', fontSize: '1.1rem' }}>
                     Prêt à afficher tes potes ?
@@ -85,7 +89,7 @@ const Home = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2 }}
                 className="hero-card-container"
-                style={{ position: 'relative', flex: '0 0 auto', width: '140px', height: '180px', marginBottom: '12px', marginTop: '0px' }}
+                style={{ position: 'relative', flex: '0 0 auto', width: '140px', height: '180px' }}
             >
                 {/* Pink outline (bottom right) */}
                 <div style={{
@@ -260,8 +264,7 @@ const Home = () => {
                 className="glass-panel"
                 style={{
                     width: '100%',
-                    marginTop: '12px',
-                    marginBottom: '5px',
+                    marginTop: '0px',
                     padding: '12px 16px',
                     borderRadius: '16px',
                     boxShadow: '0 10px 30px rgba(0,0,0,0.4)',

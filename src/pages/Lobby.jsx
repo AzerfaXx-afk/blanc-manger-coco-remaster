@@ -22,8 +22,9 @@ const Lobby = () => {
     const isHost = location.state?.isHost ?? true;
     const inviteLink = `https://blancmangecoco.app/join/${roomCode}`; // Mock URL
 
-    // Get real pseudo from localStorage if host
+    // Get real pseudo and avatar from localStorage
     const myPseudo = localStorage.getItem('profile_pseudo') || 'Capitaine Zgueg';
+    const myAvatar = localStorage.getItem('profile_image') || null;
 
     // Players state (starts empty except host)
     const [players, setPlayers] = useState([
@@ -166,12 +167,16 @@ const Lobby = () => {
                                 >
                                     <div style={{
                                         width: '60px', height: '60px', borderRadius: '50%',
-                                        background: 'rgba(255,255,255,0.05)', display: 'flex',
+                                        background: (player.id === 'me' && myAvatar)
+                                            ? `url(${myAvatar}) center/cover`
+                                            : 'rgba(255,255,255,0.05)',
+                                        display: 'flex',
                                         alignItems: 'center', justifyContent: 'center', marginBottom: '15px',
                                         border: `2px solid ${iconColor}`,
-                                        boxShadow: `0 0 10px ${iconColor}40`
+                                        boxShadow: `0 0 10px ${iconColor}40`,
+                                        overflow: 'hidden'
                                     }}>
-                                        <Icon size={32} color={iconColor} />
+                                        {(player.id === 'me' && myAvatar) ? null : <Icon size={32} color={iconColor} />}
                                     </div>
 
                                     <span style={{ fontSize: '0.9rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', minHeight: '36px' }}>
