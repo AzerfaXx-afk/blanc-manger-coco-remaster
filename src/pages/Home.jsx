@@ -24,10 +24,9 @@ const Home = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            height: '100vh',
-            height: '100dvh',
+            height: '100%',
             width: '100%',
-            overflow: 'hidden',
+            overflowY: 'auto',
             padding: '15px 20px',
             maxWidth: '500px',
             margin: '0 auto',
@@ -86,21 +85,21 @@ const Home = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2 }}
                 className="hero-card-container"
-                style={{ position: 'relative', flex: '0 1 280px', width: '210px', marginBottom: '35px', marginTop: '10px' }}
+                style={{ position: 'relative', flex: '0 0 auto', width: '180px', height: '230px', marginBottom: '20px', marginTop: '5px' }}
             >
                 {/* Pink outline (bottom right) */}
                 <div style={{
-                    position: 'absolute', top: '15px', left: '15px', width: '100%', height: '100%',
+                    position: 'absolute', top: '10px', left: '10px', width: '100%', height: '100%',
                     borderRadius: '16px', border: '2px solid rgba(255, 0, 127, 0.6)',
-                    boxShadow: '0 0 25px rgba(255, 0, 127, 0.5), inset 0 0 15px rgba(255, 0, 127, 0.3)',
+                    boxShadow: '0 0 20px rgba(255, 0, 127, 0.4)',
                     zIndex: 0
                 }} />
 
                 {/* Cyan outline (top left) */}
                 <div style={{
-                    position: 'absolute', top: '-15px', left: '-15px', width: '100%', height: '100%',
+                    position: 'absolute', top: '-10px', left: '-10px', width: '100%', height: '100%',
                     borderRadius: '16px', border: '2px solid rgba(0, 229, 255, 0.6)',
-                    boxShadow: '0 0 25px rgba(0, 229, 255, 0.5), inset 0 0 15px rgba(0, 229, 255, 0.3)',
+                    boxShadow: '0 0 20px rgba(0, 229, 255, 0.4)',
                     zIndex: 1
                 }} />
 
@@ -108,8 +107,8 @@ const Home = () => {
                 <div style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                     borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                    padding: '24px', border: '2px solid rgba(255,255,255,0.3)',
-                    boxShadow: '0 25px 50px rgba(0,0,0,0.9)', zIndex: 2,
+                    padding: '20px', border: '2px solid rgba(255,255,255,0.3)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.9)', zIndex: 2,
                     background: 'linear-gradient(135deg, rgba(30, 34, 43, 0.95) 0%, rgba(20, 23, 28, 0.95) 100%)',
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)'
@@ -117,8 +116,9 @@ const Home = () => {
                     <span className="hero-card-text" style={{
                         fontWeight: '900',
                         color: '#fff',
+                        fontSize: '1.2rem',
                         letterSpacing: '2px',
-                        lineHeight: '1.4',
+                        lineHeight: '1.3',
                         textAlign: 'center'
                     }}>
                         CARTES<br />POUR<br />GENS<br />ATROCES
@@ -126,10 +126,11 @@ const Home = () => {
                     <span className="hero-card-badge" style={{
                         color: 'rgba(255,255,255,0.6)',
                         position: 'absolute',
-                        bottom: '30px',
+                        bottom: '20px',
                         textTransform: 'uppercase',
-                        letterSpacing: '3px',
-                        fontWeight: 'bold'
+                        letterSpacing: '2px',
+                        fontWeight: 'bold',
+                        fontSize: '0.6rem'
                     }}>
                         18+ SEULEMENT
                     </span>
@@ -201,20 +202,21 @@ const Home = () => {
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '8px', marginLeft: '5px' }}>
                         Entrer le code à 4 lettres
                     </div>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
                         <input
                             placeholder="A 2 B 7"
                             maxLength={4}
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
                             style={{
-                                flex: 2,
+                                flex: 1,
+                                minWidth: 0,
                                 background: '#161923',
                                 border: '1px solid #332130',
                                 borderRadius: '12px',
                                 color: 'white',
-                                padding: '0 20px',
-                                fontSize: '1.2rem',
+                                padding: '14px 15px',
+                                fontSize: '1.1rem',
                                 textTransform: 'uppercase',
                                 outline: 'none',
                                 letterSpacing: '4px',
@@ -230,11 +232,11 @@ const Home = () => {
                             onClick={handleJoin}
                             disabled={code.length < 4}
                             style={{
-                                flex: 1,
-                                padding: '16px 0',
+                                flexShrink: 0,
+                                padding: '14px 20px',
                                 borderRadius: '12px',
                                 fontWeight: '800',
-                                fontSize: '0.9rem',
+                                fontSize: '0.8rem',
                                 cursor: code.length < 4 ? 'not-allowed' : 'pointer',
                                 opacity: code.length < 4 ? 0.5 : 1,
                                 textTransform: 'uppercase',

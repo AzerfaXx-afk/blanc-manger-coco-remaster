@@ -307,79 +307,79 @@ const Game = () => {
 
             {/* Middle Section: Playground */}
             <div style={{
-                flex: 1,
+                flexShrink: 0,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '10px 20px',
+                padding: '5px 15px 10px',
                 position: 'relative'
             }}>
 
                 {phase !== PHASES.END_GAME && (
-                    <h3 style={{
-                        position: 'absolute', top: '0px',
-                        fontSize: '0.8rem', letterSpacing: '4px', color: 'var(--text-muted)', textTransform: 'uppercase'
+                    <div style={{
+                        fontSize: '0.7rem', letterSpacing: '3px', color: 'var(--text-muted)', textTransform: 'uppercase',
+                        marginBottom: '8px'
                     }}>
                         Manche {round}
-                    </h3>
+                    </div>
                 )}
 
-                {/* Black Card (Always visible, changes content based on phase) */}
+                {/* Black Card (Compact for mobile) */}
                 <motion.div
                     className="black-card-wrapper"
                     layout
-                    initial={{ y: -50, opacity: 0 }}
+                    initial={{ y: -30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    style={{ position: 'relative', width: '100%', maxWidth: '340px', minHeight: '260px', zIndex: 5 }}
+                    style={{ position: 'relative', width: '85%', maxWidth: '340px', minHeight: '150px', zIndex: 5 }}
                 >
                     <div style={{
-                        position: 'absolute', top: '10px', left: '10px', width: '100%', height: '100%',
-                        borderRadius: '20px', border: '2px solid rgba(255, 0, 127, 0.4)',
-                        boxShadow: '0 0 20px rgba(255, 0, 127, 0.2)', zIndex: 0
+                        position: 'absolute', top: '6px', left: '6px', width: '100%', height: '100%',
+                        borderRadius: '16px', border: '2px solid rgba(255, 0, 127, 0.4)',
+                        boxShadow: '0 0 15px rgba(255, 0, 127, 0.2)', zIndex: 0
                     }} />
                     <div style={{
-                        position: 'absolute', top: '-10px', left: '-10px', width: '100%', height: '100%',
-                        borderRadius: '20px', border: '2px solid rgba(0, 229, 255, 0.4)',
-                        boxShadow: '0 0 20px rgba(0, 229, 255, 0.2)', zIndex: 1
+                        position: 'absolute', top: '-6px', left: '-6px', width: '100%', height: '100%',
+                        borderRadius: '16px', border: '2px solid rgba(0, 229, 255, 0.4)',
+                        boxShadow: '0 0 15px rgba(0, 229, 255, 0.2)', zIndex: 1
                     }} />
 
                     <div className="black-card-inner" style={{
                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                        padding: '30px 20px', borderRadius: '20px',
+                        padding: '20px 15px', borderRadius: '16px',
                         background: 'linear-gradient(135deg, rgba(30,34,43,1) 0%, rgba(20,23,28,1) 100%)',
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+                        boxShadow: '0 15px 30px rgba(0,0,0,0.8)',
                         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
                         textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', zIndex: 2
                     }}>
                         {phase === PHASES.END_GAME ? (
                             <>
-                                <Trophy size={50} color="var(--accent-pink)" style={{ marginBottom: '15px' }} />
-                                <h2 className="black-card-text" style={{ fontSize: '1.5rem', fontWeight: '900', lineHeight: '1.4', color: 'var(--accent-cyan)' }}>
+                                <Trophy size={36} color="var(--accent-pink)" style={{ marginBottom: '10px' }} />
+                                <h2 className="black-card-text" style={{ fontSize: '1.3rem', fontWeight: '900', lineHeight: '1.3', color: 'var(--accent-cyan)' }}>
                                     PARTIE TERMINÉE
                                 </h2>
-                                <div style={{ marginTop: '5px', color: 'var(--text-muted)' }}>Le podium est prêt !</div>
+                                <div style={{ marginTop: '5px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>Le podium est prêt !</div>
                             </>
                         ) : phase === PHASES.REVEAL ? (
                             <>
-                                <Trophy size={40} color="var(--accent-pink)" style={{ marginBottom: '15px' }} />
-                                <h2 className="black-card-text" style={{ fontSize: '1.2rem', fontWeight: '900', lineHeight: '1.4' }}>
+                                <Trophy size={30} color="var(--accent-pink)" style={{ marginBottom: '8px' }} />
+                                <h2 className="black-card-text" style={{ fontSize: '1rem', fontWeight: '900', lineHeight: '1.3' }}>
                                     {renderBlackCardText(submissions.find(s => s.ownerId === winner)?.cards || [])}
                                 </h2>
-                                <div style={{ marginTop: '20px', color: winner === 'me' ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: 'bold' }}>
-                                    {winner === 'me' ? 'VOUS AVEZ GAGNÉ LA MANCHE !' : `${winner.toUpperCase()} REMPORTE LE POINT`}
+                                <div style={{ marginTop: '10px', color: winner === 'me' ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                                    {winner === 'me' ? 'VOUS AVEZ GAGNÉ !' : `${winner.toUpperCase()} GAGNE`}
                                 </div>
                             </>
                         ) : (
                             <>
-                                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 'bold', marginBottom: '15px' }}>
+                                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 'bold', marginBottom: '8px' }}>
                                     {phase === PHASES.VOTING ? 'VOTER POUR LA MEILLEURE' : 'CARTE QUESTION'}
                                 </div>
-                                <h2 className="black-card-text" style={{ fontSize: '1.2rem', fontWeight: '900', lineHeight: '1.4' }}>
+                                <h2 className="black-card-text" style={{ fontSize: '1.05rem', fontWeight: '900', lineHeight: '1.3' }}>
                                     {renderBlackCardText(mySelection)}
                                 </h2>
                                 {(phase === PHASES.PLAYING || phase === PHASES.DEALING) && (
-                                    <div style={{ marginTop: 'auto', paddingTop: '20px', color: 'var(--accent-blue)', fontWeight: 'bold', fontSize: '0.75rem', letterSpacing: '1px' }}>
+                                    <div style={{ marginTop: '10px', color: 'var(--accent-blue)', fontWeight: 'bold', fontSize: '0.65rem', letterSpacing: '1px' }}>
                                         {maxSelections} CARTE{maxSelections > 1 ? 'S' : ''} REQUISE{maxSelections > 1 ? 'S' : ''}
                                     </div>
                                 )}
@@ -395,7 +395,7 @@ const Game = () => {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0 }}
-                            style={{ position: 'absolute', bottom: '20px', fontWeight: 'bold', color: 'var(--accent-cyan)', textAlign: 'center' }}
+                            style={{ marginTop: '10px', fontWeight: 'bold', color: 'var(--accent-cyan)', textAlign: 'center', fontSize: '0.85rem' }}
                         >
                             EN ATTENTE DES AUTRES JOUEURS...
                         </motion.div>
@@ -407,25 +407,33 @@ const Game = () => {
             <div className="glass-panel bottom-panel" style={{
                 position: 'relative',
                 zIndex: 10,
-                padding: '20px 0',
-                borderRadius: '30px 30px 0 0',
+                padding: '12px 0 0',
+                borderRadius: '24px 24px 0 0',
                 borderBottom: 'none',
                 boxShadow: '0 -10px 40px rgba(0,0,0,0.8)',
-                flexShrink: 0,
-                minHeight: '280px',
+                flex: 1,
+                minHeight: 0,
                 width: '100%',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                overflow: 'hidden'
             }}>
-                <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: 'bold', marginBottom: '15px' }}>
+                <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.7rem', letterSpacing: '2px', fontWeight: 'bold', marginBottom: '8px', flexShrink: 0 }}>
                     {phase === PHASES.VOTING ? 'RÉPONSES ANONYMES' : phase === PHASES.END_GAME ? 'RÉSULTATS FINAUX' : 'VOTRE MAIN (11 CARTES)'}
                 </div>
 
-                {/* Hand View */}
+                {/* Hand View - 2 Column Vertical Grid */}
                 {(phase === PHASES.DEALING || phase === PHASES.PLAYING || phase === PHASES.WAITING) && (
                     <div className="hand-container" style={{
-                        display: 'flex', overflowX: 'auto', gap: '15px', padding: '35px 20px 100px 20px',
-                        scrollSnapType: 'x mandatory', flex: 1, alignItems: 'center', width: '100%'
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '10px',
+                        padding: '8px 15px',
+                        paddingBottom: mySelection.length === maxSelections ? '80px' : '15px',
+                        overflowY: 'auto',
+                        flex: 1,
+                        minHeight: 0,
+                        width: '100%'
                     }}>
                         <AnimatePresence>
                             {hand.map((card, index) => {
@@ -435,40 +443,40 @@ const Game = () => {
                                 return (
                                     <motion.div
                                         key={card.id}
-                                        initial={phase === PHASES.DEALING ? { opacity: 0, y: 50, scale: 0.8 } : { opacity: 1, y: 0, scale: 1 }}
+                                        initial={phase === PHASES.DEALING ? { opacity: 0, y: 30, scale: 0.9 } : { opacity: 1, y: 0, scale: 1 }}
                                         animate={{
                                             opacity: phase === PHASES.WAITING && !isSelected ? 0.3 : 1,
-                                            y: isSelected ? -15 : 0,
-                                            scale: 1
+                                            scale: isSelected ? 1.03 : 1
                                         }}
                                         exit={{ opacity: 0, scale: 0.5 }}
                                         transition={{
-                                            delay: phase === PHASES.DEALING ? index * 0.05 : 0,
+                                            delay: phase === PHASES.DEALING ? index * 0.04 : 0,
                                             type: 'spring', stiffness: 300, damping: 20
                                         }}
                                         onClick={() => toggleSelection(card)}
                                         className="white-card"
                                         style={{
                                             background: isSelected ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
-                                            borderRadius: '16px', padding: '15px', minWidth: '130px', height: '190px',
+                                            borderRadius: '14px', padding: '12px',
                                             border: isSelected ? '2px solid var(--accent-pink)' : '1px solid rgba(255,255,255,0.1)',
                                             boxShadow: isSelected ? '0 0 15px rgba(255,0,127,0.4)' : 'none',
                                             cursor: phase === PHASES.PLAYING ? 'pointer' : 'default',
-                                            display: 'flex', flexDirection: 'column', scrollSnapAlign: 'center', flexShrink: 0,
-                                            position: 'relative'
+                                            display: 'flex', flexDirection: 'column',
+                                            position: 'relative',
+                                            minHeight: '110px'
                                         }}
                                     >
-                                        <div className="white-card-text" style={{ flex: 1, fontSize: '0.9rem', fontWeight: '700', lineHeight: '1.3', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <div className="white-card-text" style={{ flex: 1, fontSize: '0.8rem', fontWeight: '700', lineHeight: '1.3', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             {card.text}
                                         </div>
-                                        <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'auto', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '0.45rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'auto', textAlign: 'center', paddingTop: '4px' }}>
                                             Au Fond Du Trou
                                         </div>
                                         {isSelected && (
                                             <div style={{
-                                                position: 'absolute', top: '-10px', right: '-10px', background: 'var(--accent-pink)',
-                                                width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                fontWeight: 'bold', fontSize: '0.8rem'
+                                                position: 'absolute', top: '-8px', right: '-8px', background: 'var(--accent-pink)',
+                                                width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                fontWeight: 'bold', fontSize: '0.7rem'
                                             }}>
                                                 {selectionIndex + 1}
                                             </div>
@@ -646,16 +654,19 @@ const Game = () => {
                     </div>
                 )}
 
-                {/* Play Button Overlay */}
+                {/* Play Button Overlay - fixed at bottom of panel */}
                 <AnimatePresence>
                     {phase === PHASES.PLAYING && mySelection.length === maxSelections && (
                         <motion.div
                             className="confirm-panel"
-                            initial={{ y: 80, opacity: 0 }}
+                            initial={{ y: 60, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: 80, opacity: 0 }}
+                            exit={{ y: 60, opacity: 0 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                            style={{ position: 'absolute', bottom: '15px', left: 0, width: '100%', display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 20 }}
+                            style={{
+                                position: 'absolute', bottom: '12px', left: 0, width: '100%',
+                                display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 30
+                            }}
                         >
                             <motion.button
                                 className="confirm-btn"
@@ -663,13 +674,13 @@ const Game = () => {
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => { playBop(); handleConfirmPlay(); }}
                                 style={{
-                                    pointerEvents: 'auto', padding: '16px 30px', borderRadius: '30px', fontSize: '1rem', fontWeight: '900',
+                                    pointerEvents: 'auto', padding: '14px 30px', borderRadius: '30px', fontSize: '1rem', fontWeight: '900',
                                     display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', textTransform: 'uppercase',
                                     background: 'linear-gradient(135deg, var(--accent-cyan) 0%, rgba(0, 168, 255, 0.8) 100%)',
-                                    color: '#fff', border: 'none', boxShadow: '0 10px 25px rgba(0, 229, 255, 0.4)'
+                                    color: '#fff', border: 'none', boxShadow: '0 8px 25px rgba(0, 229, 255, 0.5)'
                                 }}
                             >
-                                CONFIRMER <Check size={20} />
+                                CONFIRMER <Check size={18} />
                             </motion.button>
                         </motion.div>
                     )}
