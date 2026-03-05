@@ -26,6 +26,7 @@ const Home = () => {
             alignItems: 'center',
             height: '100vh',
             height: '100dvh',
+            width: '100%',
             overflow: 'hidden',
             padding: '15px 20px',
             maxWidth: '500px',

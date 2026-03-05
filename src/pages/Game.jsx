@@ -220,6 +220,7 @@ const Game = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 height: '100dvh',
+                width: '100%',
                 overflow: 'hidden',
                 position: 'relative',
                 maxWidth: '1000px',
@@ -245,7 +246,7 @@ const Game = () => {
 
                     {/* Scoreboard (Gamified - Top 5 max with overflow indicator) */}
                     <div className="scoreboard-container" style={{
-                        display: 'flex', gap: '15px', alignItems: 'center',
+                        display: 'flex', gap: '15px', alignItems: 'center', maxWidth: 'calc(100% - 140px)',
                         overflowX: 'auto', scrollbarWidth: 'none', padding: '0 10px',
                         maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
                     }}>
@@ -412,6 +413,7 @@ const Game = () => {
                 boxShadow: '0 -10px 40px rgba(0,0,0,0.8)',
                 flexShrink: 0,
                 minHeight: '280px',
+                width: '100%',
                 display: 'flex',
                 flexDirection: 'column'
             }}>
@@ -423,7 +425,7 @@ const Game = () => {
                 {(phase === PHASES.DEALING || phase === PHASES.PLAYING || phase === PHASES.WAITING) && (
                     <div className="hand-container" style={{
                         display: 'flex', overflowX: 'auto', gap: '15px', padding: '35px 20px 100px 20px',
-                        scrollSnapType: 'x mandatory', flex: 1, alignItems: 'center'
+                        scrollSnapType: 'x mandatory', flex: 1, alignItems: 'center', width: '100%'
                     }}>
                         <AnimatePresence>
                             {hand.map((card, index) => {

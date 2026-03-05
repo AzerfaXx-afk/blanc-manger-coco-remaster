@@ -134,11 +134,11 @@ body {
 
   /* Shrink the top bar actions and score */
   .top-bar-btn {
-    padding: 6px 10px !important;
+    padding: 8px 12px !important;
   }
 
   .top-bar-btn span {
-    font-size: 0.65rem !important;
+    font-size: 0.75rem !important;
     display: none !important;
     /* Hide text on mobile for "Terminer" to save space */
   }
@@ -150,23 +150,22 @@ body {
   /* Make the scoreboard smaller */
   .score-item span:nth-child(2) {
     font-size: 1rem !important;
-    /* Smaller numbers */
   }
 
   .score-item span:first-child {
     font-size: 0.5rem !important;
-    /* Smaller names */
   }
 
   .scoreboard-container {
-    gap: 8px !important;
+    gap: 10px !important;
   }
 
   /* Shrink the Black Card Playground */
   .black-card-wrapper {
-    min-height: 200px !important;
-    max-width: 100% !important;
-    margin: 0 10px !important;
+    min-height: 220px !important;
+    width: 90% !important;
+    max-width: 320px !important;
+    margin: 0 auto !important;
   }
 
   .black-card-inner {
@@ -174,24 +173,23 @@ body {
   }
 
   .black-card-text {
-    font-size: 1rem !important;
-    /* Smaller question text */
+    font-size: 1.1rem !important;
   }
 
   /* Shrink the Player Hand (White Cards) */
   .hand-container {
-    padding: 15px 10px 80px 10px !important;
-    gap: 10px !important;
+    padding: 15px 15px 90px 15px !important;
+    gap: 12px !important;
   }
 
   .white-card {
-    min-width: 105px !important;
-    height: 150px !important;
-    padding: 10px !important;
+    min-width: 120px !important;
+    height: 170px !important;
+    padding: 12px !important;
   }
 
   .white-card-text {
-    font-size: 0.75rem !important;
+    font-size: 0.8rem !important;
   }
 
   /* Bottom Panel Padding */
@@ -202,11 +200,60 @@ body {
 
   /* End game button overlay */
   .confirm-panel {
-    bottom: 10px !important;
+    bottom: 15px !important;
   }
 
   .confirm-btn {
-    padding: 12px 20px !important;
-    font-size: 0.9rem !important;
+    padding: 14px 24px !important;
+    font-size: 1rem !important;
+    width: 90% !important;
+    max-width: 300px !important;
+  }
+
+  /* --- Home Page --- */
+  .home-title {
+    font-size: 1.8rem !important;
+  }
+
+  .home-subtitle {
+    font-size: 1.4rem !important;
+  }
+
+  .home-desc {
+    font-size: 0.85rem !important;
+  }
+
+  .hero-card-container {
+    flex: 0 1 260px !important;
+    width: 200px !important;
+    margin-bottom: 35px !important;
+  }
+
+  .hero-card-text {
+    font-size: 1.6rem !important;
+  }
+
+  .hero-card-badge {
+    font-size: 0.75rem !important;
+  }
+
+  .how-it-works-item svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  /* --- Lobby Page --- */
+  .lobby-code-title {
+    font-size: 1.5rem !important;
+    gap: 10px !important;
+  }
+
+  .lobby-code-value {
+    font-size: 2rem !important;
+  }
+
+  .lobby-bottom-btn {
+    font-size: 1.4rem !important;
+    padding: 18px !important;
   }
 }

@@ -70,6 +70,7 @@ const Lobby = () => {
             padding: '20px',
             height: '100vh', /* Fixed height */
             height: '100dvh',
+            width: '100%',
             overflow: 'hidden', /* Prevent global scrolling */
             maxWidth: '600px',
             margin: '0 auto',
