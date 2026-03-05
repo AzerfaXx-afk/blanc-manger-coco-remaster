@@ -227,6 +227,7 @@ const Game = () => {
                 fontFamily: "'Inter', sans-serif",
                 backgroundColor: 'var(--bg-main)'
             }}
+            className="game-container"
         >
 
             {/* Top Navigation / Status Board */}
@@ -234,7 +235,7 @@ const Game = () => {
                 <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px 20px', flexShrink: 0, width: '100%', minHeight: '70px' }}>
                     <div style={{ position: 'absolute', left: '20px', zIndex: 10 }}>
                         <div
-                            className="glass-panel"
+                            className="glass-panel top-bar-btn"
                             onClick={handleExit}
                             style={{ padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)' }}
                         >
@@ -243,7 +244,7 @@ const Game = () => {
                     </div>
 
                     {/* Scoreboard (Gamified - Top 5 max with overflow indicator) */}
-                    <div style={{
+                    <div className="scoreboard-container" style={{
                         display: 'flex', gap: '15px', alignItems: 'center',
                         overflowX: 'auto', scrollbarWidth: 'none', padding: '0 10px',
                         maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
@@ -261,7 +262,7 @@ const Game = () => {
                                     {top5.map((player, idx) => (
                                         <React.Fragment key={player.id}>
                                             {idx > 0 && <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />}
-                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
+                                            <div className="score-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
                                                 <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>{player.name}</span>
                                                 <span style={{ fontWeight: '900', color: player.id === 'me' ? 'var(--accent-cyan)' : player.id === 'bot1' ? '#ff007f' : '#00f0ff', fontSize: '1.2rem' }}>{player.score}</span>
                                                 <AnimatePresence>
@@ -283,6 +284,7 @@ const Game = () => {
                     <div style={{ position: 'absolute', right: '20px', zIndex: 10 }}>
                         {((phase === PHASES.DEALING || phase === PHASES.REVEAL || phase === PHASES.PLAYING || phase === PHASES.VOTING || phase === PHASES.WAITING) && isHost) && (
                             <motion.div
+                                className="top-bar-btn"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={requestEndGame}
@@ -294,7 +296,7 @@ const Game = () => {
                                 }}
                                 title="Mettre fin à la partie"
                             >
-                                <XCircle size={16} color="#fff" />
+                                <XCircle size={16} color="#fff" style={{ margin: 0 }} />
                                 <span style={{ color: '#fff', letterSpacing: '0.5px', fontWeight: '900', fontSize: '0.75rem', textTransform: 'uppercase' }}>TERMINER</span>
                             </motion.div>
                         )}
@@ -324,6 +326,7 @@ const Game = () => {
 
                 {/* Black Card (Always visible, changes content based on phase) */}
                 <motion.div
+                    className="black-card-wrapper"
                     layout
                     initial={{ y: -50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -340,7 +343,7 @@ const Game = () => {
                         boxShadow: '0 0 20px rgba(0, 229, 255, 0.2)', zIndex: 1
                     }} />
 
-                    <div style={{
+                    <div className="black-card-inner" style={{
                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                         padding: '30px 20px', borderRadius: '20px',
                         background: 'linear-gradient(135deg, rgba(30,34,43,1) 0%, rgba(20,23,28,1) 100%)',
@@ -351,7 +354,7 @@ const Game = () => {
                         {phase === PHASES.END_GAME ? (
                             <>
                                 <Trophy size={50} color="var(--accent-pink)" style={{ marginBottom: '15px' }} />
-                                <h2 style={{ fontSize: '1.5rem', fontWeight: '900', lineHeight: '1.4', color: 'var(--accent-cyan)' }}>
+                                <h2 className="black-card-text" style={{ fontSize: '1.5rem', fontWeight: '900', lineHeight: '1.4', color: 'var(--accent-cyan)' }}>
                                     PARTIE TERMINÉE
                                 </h2>
                                 <div style={{ marginTop: '5px', color: 'var(--text-muted)' }}>Le podium est prêt !</div>
@@ -359,7 +362,7 @@ const Game = () => {
                         ) : phase === PHASES.REVEAL ? (
                             <>
                                 <Trophy size={40} color="var(--accent-pink)" style={{ marginBottom: '15px' }} />
-                                <h2 style={{ fontSize: '1.2rem', fontWeight: '900', lineHeight: '1.4' }}>
+                                <h2 className="black-card-text" style={{ fontSize: '1.2rem', fontWeight: '900', lineHeight: '1.4' }}>
                                     {renderBlackCardText(submissions.find(s => s.ownerId === winner)?.cards || [])}
                                 </h2>
                                 <div style={{ marginTop: '20px', color: winner === 'me' ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: 'bold' }}>
@@ -371,7 +374,7 @@ const Game = () => {
                                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 'bold', marginBottom: '15px' }}>
                                     {phase === PHASES.VOTING ? 'VOTER POUR LA MEILLEURE' : 'CARTE QUESTION'}
                                 </div>
-                                <h2 style={{ fontSize: '1.2rem', fontWeight: '900', lineHeight: '1.4' }}>
+                                <h2 className="black-card-text" style={{ fontSize: '1.2rem', fontWeight: '900', lineHeight: '1.4' }}>
                                     {renderBlackCardText(mySelection)}
                                 </h2>
                                 {(phase === PHASES.PLAYING || phase === PHASES.DEALING) && (
@@ -400,7 +403,7 @@ const Game = () => {
             </div>
 
             {/* Bottom Section: Interactive Area (Hand or Voting Options) */}
-            <div className="glass-panel" style={{
+            <div className="glass-panel bottom-panel" style={{
                 position: 'relative',
                 zIndex: 10,
                 padding: '20px 0',
@@ -418,7 +421,7 @@ const Game = () => {
 
                 {/* Hand View */}
                 {(phase === PHASES.DEALING || phase === PHASES.PLAYING || phase === PHASES.WAITING) && (
-                    <div style={{
+                    <div className="hand-container" style={{
                         display: 'flex', overflowX: 'auto', gap: '15px', padding: '35px 20px 100px 20px',
                         scrollSnapType: 'x mandatory', flex: 1, alignItems: 'center'
                     }}>
@@ -442,6 +445,7 @@ const Game = () => {
                                             type: 'spring', stiffness: 300, damping: 20
                                         }}
                                         onClick={() => toggleSelection(card)}
+                                        className="white-card"
                                         style={{
                                             background: isSelected ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
                                             borderRadius: '16px', padding: '15px', minWidth: '130px', height: '190px',
@@ -452,7 +456,7 @@ const Game = () => {
                                             position: 'relative'
                                         }}
                                     >
-                                        <div style={{ flex: 1, fontSize: '0.9rem', fontWeight: '700', lineHeight: '1.3', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <div className="white-card-text" style={{ flex: 1, fontSize: '0.9rem', fontWeight: '700', lineHeight: '1.3', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             {card.text}
                                         </div>
                                         <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'auto', textAlign: 'center' }}>
@@ -644,6 +648,7 @@ const Game = () => {
                 <AnimatePresence>
                     {phase === PHASES.PLAYING && mySelection.length === maxSelections && (
                         <motion.div
+                            className="confirm-panel"
                             initial={{ y: 80, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: 80, opacity: 0 }}
@@ -651,6 +656,7 @@ const Game = () => {
                             style={{ position: 'absolute', bottom: '15px', left: 0, width: '100%', display: 'flex', justifyContent: 'center', pointerEvents: 'none', zIndex: 20 }}
                         >
                             <motion.button
+                                className="confirm-btn"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => { playBop(); handleConfirmPlay(); }}

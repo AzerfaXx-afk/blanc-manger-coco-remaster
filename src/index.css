@@ -119,3 +119,94 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
 }
+
+/* ====================================================
+   MOBILE RESPONSIVENESS (Pro UI V3)
+==================================================== */
+
+@media (max-width: 600px) {
+
+  /* Smaller padding on the main game container */
+  .game-container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  /* Shrink the top bar actions and score */
+  .top-bar-btn {
+    padding: 6px 10px !important;
+  }
+
+  .top-bar-btn span {
+    font-size: 0.65rem !important;
+    display: none !important;
+    /* Hide text on mobile for "Terminer" to save space */
+  }
+
+  .top-bar-btn svg {
+    margin-right: 0 !important;
+  }
+
+  /* Make the scoreboard smaller */
+  .score-item span:nth-child(2) {
+    font-size: 1rem !important;
+    /* Smaller numbers */
+  }
+
+  .score-item span:first-child {
+    font-size: 0.5rem !important;
+    /* Smaller names */
+  }
+
+  .scoreboard-container {
+    gap: 8px !important;
+  }
+
+  /* Shrink the Black Card Playground */
+  .black-card-wrapper {
+    min-height: 200px !important;
+    max-width: 100% !important;
+    margin: 0 10px !important;
+  }
+
+  .black-card-inner {
+    padding: 20px 15px !important;
+  }
+
+  .black-card-text {
+    font-size: 1rem !important;
+    /* Smaller question text */
+  }
+
+  /* Shrink the Player Hand (White Cards) */
+  .hand-container {
+    padding: 15px 10px 80px 10px !important;
+    gap: 10px !important;
+  }
+
+  .white-card {
+    min-width: 105px !important;
+    height: 150px !important;
+    padding: 10px !important;
+  }
+
+  .white-card-text {
+    font-size: 0.75rem !important;
+  }
+
+  /* Bottom Panel Padding */
+  .bottom-panel {
+    padding: 15px 0 !important;
+    min-height: auto !important;
+  }
+
+  /* End game button overlay */
+  .confirm-panel {
+    bottom: 10px !important;
+  }
+
+  .confirm-btn {
+    padding: 12px 20px !important;
+    font-size: 0.9rem !important;
+  }
+}
