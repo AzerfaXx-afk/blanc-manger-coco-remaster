@@ -1,0 +1,899 @@
+{
+  "blackCards": [
+    {
+      "text": "Votre grand-mère a voulu recevoir _____ avant de rejoindre le Seigneur.",
+      "pick": 1
+    },
+    {
+      "text": "La chose _____ que j'ai le plus peur.",
+      "pick": 1
+    },
+    {
+      "text": "_____ elle, et ça pue grave.",
+      "pick": 1
+    },
+    {
+      "text": "La chose _____ que je déteste au lit.",
+      "pick": 1
+    },
+    {
+      "text": "_____ qui pue la mort.",
+      "pick": 1
+    },
+    {
+      "text": "Mon papy est mort en cherchant _____.",
+      "pick": 1
+    },
+    {
+      "text": "À mon enterrement, offrez-moi _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mamie suce _____ en cachette.",
+      "pick": 1
+    },
+    {
+      "text": "Le dernier repas de tonton : _____.",
+      "pick": 1
+    },
+    {
+      "text": "Ta nièce adore _____ le soir.",
+      "pick": 1
+    },
+    {
+      "text": "Le curé bénit _____ à la messe.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin a clamsé pendant _____.",
+      "pick": 1
+    },
+    {
+      "text": "La veuve réclame _____ au notaire.",
+      "pick": 1
+    },
+    {
+      "text": "Bébé veut _____ au biberon.",
+      "pick": 1
+    },
+    {
+      "text": "Papy bande pour _____ une dernière fois.",
+      "pick": 1
+    },
+    {
+      "text": "La famille enterre _____ avec lui.",
+      "pick": 1
+    },
+    {
+      "text": "Tante est morte en pleine _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le testament : donnez _____ aux gosses.",
+      "pick": 1
+    },
+    {
+      "text": "Frangin crève pour _____.",
+      "pick": 1
+    },
+    {
+      "text": "La nounou offre _____ au petit.",
+      "pick": 1
+    },
+    {
+      "text": "Mémé a 80 ans et elle kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "L'oncle lègue _____ à la famille.",
+      "pick": 1
+    },
+    {
+      "text": "Petit-fils mérite _____ pour Noël.",
+      "pick": 1
+    },
+    {
+      "text": "Le docteur prescrit _____ en cas de mort.",
+      "pick": 1
+    },
+    {
+      "text": "Belle-maman bande _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le prêtre confesse _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tatie pue à cause de _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa est mort en _____.",
+      "pick": 1
+    },
+    {
+      "text": "La cousine suce _____ gratis.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-père enterre _____ vivant.",
+      "pick": 1
+    },
+    {
+      "text": "La messe noire inclut _____.",
+      "pick": 1
+    },
+    {
+      "text": "Ton neveu adore _____ la bite.",
+      "pick": 1
+    },
+    {
+      "text": "Mamie crève de _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le notaire lit : _____ pour tous.",
+      "pick": 1
+    },
+    {
+      "text": "Tonton fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "La veillée funèbre : _____ obligatoire.",
+      "pick": 1
+    },
+    {
+      "text": "Bébé zombie tète _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papy suce _____ avant de crever.",
+      "pick": 1
+    },
+    {
+      "text": "La famille kiffe _____ ensemble.",
+      "pick": 1
+    },
+    {
+      "text": "Tante lègue _____ à nièce.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin bande pour _____.",
+      "pick": 1
+    },
+    {
+      "text": "La cousine suce _____ le curé.",
+      "pick": 1
+    },
+    {
+      "text": "Mémé pue le _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa fist mamie _____.",
+      "pick": 1
+    },
+    {
+      "text": "La nièce mérite _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-père crève en _____.",
+      "pick": 1
+    },
+    {
+      "text": "Belle-soeur adore _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le testament trash : _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tatie suce _____ le curé.",
+      "pick": 1
+    },
+    {
+      "text": "Frangine enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le docteur prescrit _____ mortel.",
+      "pick": 1
+    },
+    {
+      "text": "Papy kiffe _____ à 90 ans.",
+      "pick": 1
+    },
+    {
+      "text": "La famille fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin crève de _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mamie lègue _____ perverse.",
+      "pick": 1
+    },
+    {
+      "text": "Tante bande _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le prêtre adore _____ bébés.",
+      "pick": 1
+    },
+    {
+      "text": "Neveu suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-mère pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa enterre _____ famille.",
+      "pick": 1
+    },
+    {
+      "text": "La veuve fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Bébé tète _____ mort.",
+      "pick": 1
+    },
+    {
+      "text": "Tonton suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "La messe : _____ communion.",
+      "pick": 1
+    },
+    {
+      "text": "Cousine crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mémé kiffe _____ bites.",
+      "pick": 1
+    },
+    {
+      "text": "Le notaire : _____ héritage.",
+      "pick": 1
+    },
+    {
+      "text": "Papy fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Belle-maman suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Frangin pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "La nièce adore _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-père lègue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tante crève en _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le curé fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mamie enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "La famille pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tatie mérite _____.",
+      "pick": 1
+    },
+    {
+      "text": "Neveu crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le docteur suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papy adore _____.",
+      "pick": 1
+    },
+    {
+      "text": "Belle-soeur fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Testament : _____ tabou.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-mère bande _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousine lègue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mémé suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tonton crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "La veuve kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "Bébé fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tante enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le prêtre pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Frangine adore _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-père fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mamie crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin lègue _____.",
+      "pick": 1
+    },
+    {
+      "text": "La famille bande _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papy suce _____ famille.",
+      "pick": 1
+    },
+    {
+      "text": "Belle-maman pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Testament mortel : _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tatie kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le curé enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Nièce crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-mère suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin adore _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mémé pue _____ bites.",
+      "pick": 1
+    },
+    {
+      "text": "Tonton lègue _____.",
+      "pick": 1
+    },
+    {
+      "text": "La veuve fist _____ bites.",
+      "pick": 1
+    },
+    {
+      "text": "Bébé suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le prêtre crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Frangin kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "Neveu enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-père pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mamie fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "La famille crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papy lègue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Testament : _____ bites.",
+      "pick": 1
+    },
+    {
+      "text": "Tatie suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le curé kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Nièce pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-mère fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Mémé bande _____.",
+      "pick": 1
+    },
+    {
+      "text": "La veuve adore _____.",
+      "pick": 1
+    },
+    {
+      "text": "Bébé pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tante lègue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le prêtre fist _____.",
+      "pick": 1
+    },
+    {
+      "text": "Frangin enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Neveu kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-père suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Belle-soeur suce _____.",
+      "pick": 1
+    },
+    {
+      "text": "Testament pue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Tatie crève _____.",
+      "pick": 1
+    },
+    {
+      "text": "Le curé bande _____.",
+      "pick": 1
+    },
+    {
+      "text": "Papa kiffe _____.",
+      "pick": 1
+    },
+    {
+      "text": "Nièce enterre _____.",
+      "pick": 1
+    },
+    {
+      "text": "Grand-mère lègue _____.",
+      "pick": 1
+    },
+    {
+      "text": "Cousin fist _____.",
+      "pick": 1
+    }
+  ],
+  "whiteCards": [
+    "Une grosse paire de seins.",
+    "Un gros pet.",
+    "Ma grand-mère.",
+    "2 bites dans la bouche.",
+    "L'évaporation.",
+    "L'évasion fiscale.",
+    "Un gros teub polonais.",
+    "Ma régulière.",
+    "Le repas de spouse.",
+    "Une canette de bière.",
+    "Repas en famille.",
+    "Un pet anal.",
+    "Les couilles de papy.",
+    "La chatte de mamie.",
+    "Du sperme frais.",
+    "Une capote usagée.",
+    "Le cul de tonton.",
+    "3 bites en même temps.",
+    "Le clito de tante.",
+    "Un gode géant.",
+    "La prostate massée.",
+    "Du pus vaginal.",
+    "Les poils pubiens.",
+    "Un pet qui pue mort.",
+    "La bite circoncise.",
+    "Du liquide séminal.",
+    "Un anus dilaté.",
+    "Les ovaires percés.",
+    "Un testicule explosé.",
+    "La glotte enflammée.",
+    "Du mucus épais.",
+    "Le frein cassé.",
+    "Une hémorroïde.",
+    "Le nombril puant.",
+    "Des croûtes sales.",
+    "La luette touchée.",
+    "Un mollard jaune.",
+    "Le sillon du cul.",
+    "Des glaires vertes.",
+    "La fossette sacrée.",
+    "Un pet humide.",
+    "La morve séchée.",
+    "Du vomi frais.",
+    "Les nichons tombants.",
+    "La rondelle vierge.",
+    "Une branlette rapide.",
+    "Le trou du cul.",
+    "Du pipi chaud.",
+    "Les seins siliconés.",
+    "Un slip taché.",
+    "La veuve en rut.",
+    "Le curé en soutane.",
+    "Du sang menstruel.",
+    "Les fesses molles.",
+    "Un vibro usé.",
+    "La langue pendante.",
+    "Du caca frais.",
+    "Les lèvres vaginales.",
+    "Un préservatif troué.",
+    "Le scrotum ridé.",
+    "Une pipe profonde.",
+    "Du jus de couille.",
+    "Les tétons durs.",
+    "Un fist anal.",
+    "La gorge profonde.",
+    "Du lubrifiant périmé.",
+    "Les vergetures.",
+    "Un plug anal.",
+    "La cyprine abondante.",
+    "Des poils anals.",
+    "Un pet silencieux.",
+    "Le prépuce long.",
+    "Du pus d'abcès.",
+    "Les cuisses grasses.",
+    "Un gode noir.",
+    "La chatte poilue.",
+    "Du sperme avalé.",
+    "Les couilles rasées.",
+    "Une levrette bestiale.",
+    "Le clitoris gonflé.",
+    "Du pet foireux.",
+    "La bite molle.",
+    "Les seins refaits.",
+    "Un 69 mouillé.",
+    "La rondelle ouverte.",
+    "Du vomi sur bite.",
+    "Les nichons naturels.",
+    "Un pet bruyant.",
+    "La prostate gonflée.",
+    "Du mucus nasal.",
+    "Les fesses rebondies.",
+    "Un vibro rose.",
+    "La langue râpeuse.",
+    "Du caca dur.",
+    "Les lèvres pulpeuses.",
+    "Un capote gonflée.",
+    "Le scrotum poilu.",
+    "Une gorge irritée.",
+    "Du jus clair.",
+    "Les vergetures blanches.",
+    "Une pipe d'adieu.",
+    "Le cercueil à double fond.",
+    "Ma veuve en string.",
+    "Un gode en forme de croix.",
+    "Mourir la bite à la main.",
+    "Une orgie post-mortem.",
+    "Le thanatopracteur pervers.",
+    "Baiser le croque-mort.",
+    "Du sperme sur la pierre tombale.",
+    "Une fellation éternelle.",
+    "Le vibromasseur hanté.",
+    "Enterrer son ex encore chaud.",
+    "La veuve noire en chaleur.",
+    "Un squelette en position du missionnaire.",
+    "La nécrophilie consentie.",
+    "Mourir en pleine sodomie.",
+    "Un ange avec une érection.",
+    "Le viagra pour fantômes.",
+    "Baiser dans le columbarium.",
+    "Une MST immortelle.",
+    "Le suicide érotique.",
+    "Des menottes sur le cercueil.",
+    "La momie bandée serré.",
+    "Un enterrement strip-tease.",
+    "Mourir d'overdose de plaisir.",
+    "Le diable en lingerie.",
+    "Une autopsie sexy.",
+    "Baiser la Faucheuse.",
+    "Du latex funéraire.",
+    "Le testament coquin.",
+    "Une dernière branlette avant l'enterrement.",
+    "Le fantôme exhibitionniste.",
+    "Mourir étouffé par des seins.",
+    "Un poltergeist qui te doigte.",
+    "La résurrection en chaleur.",
+    "Baiser un vampire impuissant.",
+    "Le cercueil king-size pour deux.",
+    "Une euthanasie orgasmique.",
+    "Des préservatifs pour zombies.",
+    "Mourir en 69 éternel.",
+    "Le curé en rut.",
+    "Une veillée funèbre caliente.",
+    "Baiser son propre clone mort.",
+    "Le gode luminescent dans le noir.",
+    "Mourir d'une crise cardiaque au lit.",
+    "Une orgie au cimetière.",
+    "Le thanatos-fétichisme.",
+    "Du bondage mortuaire.",
+    "Baiser en apesanteur funéraire.",
+    "La cryogénisation en position coquine.",
+    "Un squelette qui te suce.",
+    "Mourir pendant l'accouchement inversé.",
+    "Le diable qui te prend par derrière.",
+    "Une fellation par un ange déchu.",
+    "Le vibro enterré avec toi.",
+    "Baiser la veuve pendant les condoléances.",
+    "Mourir de rire en pleine baise.",
+    "Une MST qui te suit dans l'au-delà.",
+    "Le cercueil avec glory hole.",
+    "Baiser un revenant.",
+    "La momie qui se déroule lentement.",
+    "Mourir en essayant le Kamasutra extrême.",
+    "Un fantôme qui te lèche.",
+    "Le suicide par overdose de sexe.",
+    "Des funérailles nudistes.",
+    "Baiser en pleine messe noire.",
+    "Le viagra éternel.",
+    "Une pipe par le thanatopracteur.",
+    "Mourir coincé dans un vagin.",
+    "Le diable en 69.",
+    "Une orgie de fantômes.",
+    "Baiser son ex au cimetière.",
+    "Le cercueil vibrateur.",
+    "Mourir d'asphyxie auto-érotique.",
+    "Une veuve qui suce pendant l'enterrement.",
+    "Le squelette articulé en rut.",
+    "Baiser la mort elle-même.",
+    "Des préservatifs goût cercueil.",
+    "Mourir en pleine fellation divine.",
+    "Une euthanasie par orgasme multiple.",
+    "Le fantôme jaloux de ton ex.",
+    "Baiser un zombie consentant.",
+    "Le gode en os humain.",
+    "Mourir la langue dehors.",
+    "Une orgie viking funéraire.",
+    "Le curé qui confesse en levrette.",
+    "Baiser dans la chapelle ardente.",
+    "Le thanatopracteur qui te tripote.",
+    "Mourir avec un plug anal.",
+    "Une MST familiale.",
+    "Le diable qui te sodomise.",
+    "Baiser un ange en chaleur.",
+    "Le cercueil transparent pour voyeurs.",
+    "Mourir en train de te branler.",
+    "Une pipe posthume.",
+    "Le fantôme qui te hante le cul.",
+    "Baiser la veuve noire.",
+    "Mourir d'une overdose de fellations.",
+    "Une orgie au paradis.",
+    "Le squelette qui te doigte.",
+    "Baiser en enfer avec climatisation.",
+    "Le vibro funéraire rechargeable.",
+    "Mourir pendant une gangbang.",
+    "Une veillée funèbre avec lap dance.",
+    "Le diable en string.",
+    "Baiser un mort-vivant.",
+    "Le cercueil avec miroir au plafond.",
+    "Mourir la queue entre les jambes.",
+    "Une fellation par le fantôme.",
+    "Le suicide coquin.",
+    "Des préservatifs périmés.",
+    "Mourir vierge.",
+    "Un ange dépravé.",
+    "Baiser un esprit malin.",
+    "Un zombie timide.",
+    "L'euthanasie collective.",
+    "Des momies en chaleur.",
+    "Mourir de plaisir.",
+    "Un fantôme pervers.",
+    "La réincarnation en sex-toy.",
+    "Enterrer ses secrets sales.",
+    "Un diable sadique.",
+    "Baiser la réincarnation.",
+    "Un squelette en feu.",
+    "La mort par rire trash.",
+    "Des vampires impuissants.",
+    "Un cercueil high-tech.",
+    "Ressusciter pour tuer.",
+    "La nécrophilie virtuelle.",
+    "Mourir d'ennui sexuel.",
+    "Un ange en rut.",
+    "Baiser un démon.",
+    "Un zombie jaloux.",
+    "L'euthanasie douce.",
+    "Des momies bisexuelles.",
+    "Mourir en hurlant.",
+    "Un fantôme en chaleur.",
+    "La réincarnation en objet.",
+    "Enterrer vivant.",
+    "Un diable romantique.",
+    "Un squelette SM.",
+    "La mort par plaisir extrême.",
+    "Des vampires en string.",
+    "Un cercueil pour orgie.",
+    "Ressusciter en enfant.",
+    "La nécrophilie interdite.",
+    "Mourir de vieillesse précoce.",
+    "Un ange sadique.",
+    "Baiser l'éternité.",
+    "Un zombie en string.",
+    "L'euthanasie érotique.",
+    "Des momies en rut.",
+    "Mourir en paix.",
+    "Un fantôme bisexuel.",
+    "La réincarnation trash.",
+    "Enterrer ses amants.",
+    "Un diable exhibitionniste.",
+    "Baiser un ange déchu.",
+    "Un squelette nympho.",
+    "La mort par sodomie zombie.",
+    "Des vampires romantiques.",
+    "Un cercueil vibro.",
+    "Ressusciter pour baiser plus.",
+    "La nécrophilie familiale.",
+    "Mourir vierge éternel.",
+    "Un ange impotent.",
+    "Baiser un poltergeist sexy.",
+    "Un zombie sadomaso.",
+    "L'euthanasie collective trash.",
+    "Des momies impuissantes.",
+    "Mourir de rire au cimetière.",
+    "Un fantôme en rut.",
+    "La réincarnation en sex-symbol.",
+    "Enterrer ses regrets sexuels.",
+    "Un diable jaloux.",
+    "Un squelette en chaleur.",
+    "La mort par fellation éternelle.",
+    "Des vampires tatoués.",
+    "Un cercueil pour amoureux.",
+    "Ressusciter en transgenre.",
+    "La nécrophilie high-tech.",
+    "Mourir heureux au lit.",
+    "Un ange exhibitionniste.",
+    "Baiser dans le purgatoire.",
+    "Un zombie romantique.",
+    "L'euthanasie festive.",
+    "Des momies SM.",
+    "Mourir de plaisir overdose.",
+    "La réincarnation en animal.",
+    "Enterrer son ex vivant.",
+    "Un diable bisexuel.",
+    "Un squelette articulé.",
+    "La mort par asphyxie.",
+    "Des vampires assoiffés.",
+    "Un cercueil transparent.",
+    "Ressusciter pour venger.",
+    "La nécrophilie romantique.",
+    "Mourir seul et vierge.",
+    "Baiser un esprit.",
+    "Un zombie exhibitionniste.",
+    "L'euthanasie rapide.",
+    "Des momies tatouées.",
+    "Mourir en hurlant de plaisir.",
+    "Un fantôme sadomaso.",
+    "La réincarnation en célébrité.",
+    "Enterrer ses vices.",
+    "Un diable en string.",
+    "La mort par rire.",
+    "Mourir d'ennui.",
+    "La mort par plaisir.",
+    "Mourir de vieillesse.",
+    "La mort par sodomie.",
+    "Ressusciter pour baiser.",
+    "Baiser un poltergeist.",
+    "Mourir de rire.",
+    "Enterrer ses regrets.",
+    "La mort par fellation.",
+    "Ressusciter en trans.",
+    "Mourir heureux.",
+    "Enterrer son ex.",
+    "Mourir seul."
+  ]
+}

@@ -1,0 +1,133 @@
+﻿[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mÔ£ô[39m 2156 modules transformed.
+node.exe : 
+[31mÔ£ù[39m Build 
+failed in 2.09s
+Au caractère Ligne:1 : 
+1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Users\adamb\AppData
+\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: ([31mÔ£ù[39m   
+  Build failed in 2    
+.09s:String) [], R    
+emoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+[31merror during 
+build:
+[31msrc/pages/Lobby.js
+x (4:33): "Alien" is 
+not exported by "node_m
+odules/lucide-react/dis
+t/esm/lucide-react.js",
+ imported by "src/pages
+/Lobby.jsx".[31m
+file: [36mC:/Users/ada
+mb/Downloads/Sites-Appl
+ications/blancmang├®coc
+o/src/pages/Lobby.jsx:4
+:33[31m
+[33m
+2: import { 
+useLocation, 
+useNavigate } from 
+'react-router-dom';
+3: import { motion } 
+from 'framer-motion';
+4: import { Ghost, 
+Cat, Dog, Skull, 
+Alien, Bird, Rabbit, 
+Snail } from 
+'lucide-react';
+                       
+             ^
+5: 
+6: const mockPlayers = 
+[
+[31m
+    at getRollupError (
+file:///C:/Users/adamb/
+Downloads/Sites-Applica
+tions/blancmang%C3%A9co
+co/node_modules/rollup/
+dist/es/shared/parseAst
+.js:402:41)
+    at error (file:///C
+:/Users/adamb/Downloads
+/Sites-Applications/bla
+ncmang%C3%A9coco/node_m
+odules/rollup/dist/es/s
+hared/parseAst.js:398:4
+2)
+    at Module.error (fi
+le:///C:/Users/adamb/Do
+wnloads/Sites-Applicati
+ons/blancmang%C3%A9coco
+/node_modules/rollup/di
+st/es/shared/node-entry
+.js:17040:16)
+    at 
+Module.traceVariable (f
+ile:///C:/Users/adamb/D
+ownloads/Sites-Applicat
+ions/blancmang%C3%A9coc
+o/node_modules/rollup/d
+ist/es/shared/node-entr
+y.js:17452:29)
+    at ModuleScope.find
+Variable (file:///C:/Us
+ers/adamb/Downloads/Sit
+es-Applications/blancma
+ng%C3%A9coco/node_modul
+es/rollup/dist/es/share
+d/node-entry.js:15070:3
+9)
+    at Identifier.bind 
+(file:///C:/Users/adamb
+/Downloads/Sites-Applic
+ations/blancmang%C3%A9c
+oco/node_modules/rollup
+/dist/es/shared/node-en
+try.js:5447:40)
+    at Property.bind (f
+ile:///C:/Users/adamb/D
+ownloads/Sites-Applicat
+ions/blancmang%C3%A9coc
+o/node_modules/rollup/d
+ist/es/shared/node-entr
+y.js:2829:23)
+    at 
+ObjectExpression.bind (
+file:///C:/Users/adamb/
+Downloads/Sites-Applica
+tions/blancmang%C3%A9co
+co/node_modules/rollup/
+dist/es/shared/node-ent
+ry.js:2825:28)
+    at 
+ArrayExpression.bind (f
+ile:///C:/Users/adamb/D
+ownloads/Sites-Applicat
+ions/blancmang%C3%A9coc
+o/node_modules/rollup/d
+ist/es/shared/node-entr
+y.js:2825:28)
+    at VariableDeclarat
+or.bind (file:///C:/Use
+rs/adamb/Downloads/Site
+s-Applications/blancman
+g%C3%A9coco/node_module
+s/rollup/dist/es/shared
+/node-entry.js:2829:23)
+[39m
