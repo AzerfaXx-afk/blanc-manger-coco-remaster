@@ -1,24 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Trophy, Clock, Check, XCircle, Crown } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Trophy, Clock, Check, XCircle, Crown, Flag } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import cardsData from '../data/cards.json';
 import { playWin, playPodium, stopMusic, startMusic, playBop } from '../utils/audio';
 import useRoom from '../hooks/useRoom';
 
 const PHASES = {
-    DEALING: 'DEALING',
     PLAYING: 'PLAYING',
-    WAITING: 'WAITING',
     VOTING: 'VOTING',
     REVEAL: 'REVEAL',
     END_GAME: 'END_GAME',
 };
-
-const BOTS = [
-    { id: 'bot1', name: 'Alex', color: '#ff007f' },
-    { id: 'bot2', name: 'Sarah', color: '#00f0ff' }
-];
 
 const Game = () => {
     const navigate = useNavigate();
@@ -26,7 +19,11 @@ const Game = () => {
     const roomCode = location.state?.code || null;
 
     // Firebase room data
-    const { players: firebasePlayers, playerId, joinRoom } = useRoom();
+    const {
+        players: firebasePlayers, gameState, playerId, isHost,
+        joinRoom, submitCards, bossVote, nextRound: firebaseNextRound,
+        endGame: firebaseEndGame, leaveRoom
+    } = useRoom();
 
     // Connect to room on mount
     useEffect(() => {
@@ -35,81 +32,96 @@ const Game = () => {
         }
     }, []);
 
-    // Profile data (self fallback)
-    const myPseudo = localStorage.getItem('profile_pseudo') || 'Vous';
-    const myAvatar = localStorage.getItem('profile_image') || null;
-
-    // Mock host for testing (in real app, get from router state)
-    const isHost = true;
-
-    // Game Core State
-    const [phase, setPhase] = useState(PHASES.DEALING);
-    const [round, setRound] = useState(1);
-    const [scores, setScores] = useState({ me: 0, bot1: 0, bot2: 0 });
-
-    // Cards State
-    const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
-    const [deck, setDeck] = useState(() => shuffleArray(cardsData.whiteCards.map((text, i) => ({ id: `w_${i}`, text }))));
-    const [hand, setHand] = useState([]);
-
-    // Board State
-    const [currentBlackCard, setCurrentBlackCard] = useState(() => cardsData.blackCards[Math.floor(Math.random() * cardsData.blackCards.length)]);
+    // Local UI state
     const [mySelection, setMySelection] = useState([]);
-    const [submissions, setSubmissions] = useState([]); // All players' submitted cards for voting
-    const [votedFor, setVotedFor] = useState(null); // ID of the submission I voted for
-    const [winner, setWinner] = useState(null);
-    const [lastWinner, setLastWinner] = useState(null); // Used for +1 animation
+    const [flippedCards, setFlippedCards] = useState({});
+    const [flippedSubmissions, setFlippedSubmissions] = useState({});
     const [showEndConfirm, setShowEndConfirm] = useState(false);
-    const [flippedCards, setFlippedCards] = useState({}); // Track which cards in hand have been flipped
-    const [flippedSubmissions, setFlippedSubmissions] = useState({}); // Track flipped voting submissions
+    const [lastWinner, setLastWinner] = useState(null);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
-    const maxSelections = Math.max(1, currentBlackCard.pick);
+    // Derive game state from Firebase
+    const phase = gameState?.phase || 'PLAYING';
+    const round = gameState?.round || 1;
+    const bossId = gameState?.bossId || null;
+    const isBoss = bossId === playerId;
+    const currentBlackCard = gameState?.blackCard || { text: 'Chargement...', pick: 1 };
+    const maxSelections = Math.max(1, currentBlackCard?.pick || 1);
+    const scores = gameState?.scores || {};
+    const winner = gameState?.winner || null;
+    const playedCards = gameState?.playedCards || {};
 
-    // --- Phase Handlers ---
+    // My hand from Firebase (array of card indices)
+    const myHandIndices = gameState?.hands?.[playerId] || [];
+    const hand = myHandIndices.map(idx => ({
+        id: `w_${idx}`,
+        text: cardsData.whiteCards[idx] || '???',
+        index: idx
+    }));
 
-    // 1. DEALING -> PLAYING
+    // Player list
+    const playerList = Object.entries(firebasePlayers || {}).map(([id, data]) => ({
+        id, ...data
+    }));
+
+    // Submissions for voting (anonymized)
+    const allSubmissions = Object.entries(playedCards).map(([pid, data]) => ({
+        playerId: pid,
+        cards: (data.cards || []).map(idx => ({
+            id: `w_${idx}`,
+            text: cardsData.whiteCards[idx] || '???'
+        }))
+    }));
+
+    // Check if all non-boss players have submitted
+    const nonBossPlayers = playerList.filter(p => p.id !== bossId);
+    const allSubmitted = nonBossPlayers.length > 0 && nonBossPlayers.every(p => playedCards[p.id]);
+
+    // Auto-transition: when all non-boss players submitted, move to VOTING (host triggers)
     useEffect(() => {
-        if (phase === PHASES.DEALING) {
-            // Fill hand to 11 cards
-            const cardsNeeded = 11 - hand.length;
-            if (cardsNeeded > 0) {
-                const newCards = deck.slice(0, cardsNeeded);
-                setHand(prev => [...prev, ...newCards]);
-                setDeck(prev => prev.slice(cardsNeeded));
-            }
-
-            setTimeout(() => {
-                setPhase(PHASES.PLAYING);
+        if (phase === 'PLAYING' && allSubmitted && isHost) {
+            // Small delay for UX
+            const timer = setTimeout(async () => {
+                const { updateGameState } = await import('../hooks/useRoom').then(m => {
+                    // Can't call hook here, so use Firebase directly
+                    return {};
+                });
+                // Direct Firebase update
+                import('firebase/database').then(({ ref, update }) => {
+                    import('../utils/firebase').then(({ db }) => {
+                        update(ref(db, `rooms/${roomCode}/state`), { phase: 'VOTING' });
+                    });
+                });
             }, 1500);
+            return () => clearTimeout(timer);
         }
-    }, [phase, deck, hand.length]);
+    }, [phase, allSubmitted, isHost, roomCode]);
 
-    // 2. AUTO-REVEAL (No Timers)
-    // Since timers are gone, the "PLAYING" -> "WAITING" happens when user clicks CONFIRMER.
-    // The "WAITING" -> "VOTING" happens via timeouts (bot simulation below).
-    // The "VOTING" -> "REVEAL" happens instantly when user votes.
-
-    // 3. WAITING -> VOTING
+    // Reset local state when round changes
     useEffect(() => {
-        if (phase === PHASES.WAITING) {
-            // Simulate bots playing
-            setTimeout(() => {
-                const newSubmissions = [
-                    { id: 'sub_me', ownerId: 'me', cards: mySelection },
-                    { id: 'sub_bot1', ownerId: 'bot1', cards: shuffleArray(deck).slice(0, maxSelections) },
-                    { id: 'sub_bot2', ownerId: 'bot2', cards: shuffleArray(deck).slice(maxSelections, maxSelections * 2) }
-                ];
-                // Shuffle submissions so we don't know who played what
-                setSubmissions(shuffleArray(newSubmissions));
+        setMySelection([]);
+        setFlippedCards({});
+        setFlippedSubmissions({});
+        setHasSubmitted(false);
+    }, [round]);
 
-                // Adjust deck for bots
-                setDeck(prev => prev.slice(maxSelections * 2));
-
-                setPhase(PHASES.VOTING);
-            }, 2000); // 2s perceived waiting time
+    // Play win sound on reveal
+    useEffect(() => {
+        if (phase === 'REVEAL' && winner) {
+            playWin();
+            setLastWinner(winner);
+            const timer = setTimeout(() => setLastWinner(null), 2000);
+            return () => clearTimeout(timer);
         }
-    }, [phase, mySelection]);
+    }, [phase, winner]);
 
+    // Play podium sound on end game
+    useEffect(() => {
+        if (phase === 'END_GAME') {
+            stopMusic();
+            playPodium();
+        }
+    }, [phase]);
 
     // --- Actions ---
 
@@ -119,9 +131,9 @@ const Game = () => {
     };
 
     const toggleSelection = (card) => {
-        if (phase !== PHASES.PLAYING) return;
+        if (phase !== 'PLAYING' || isBoss || hasSubmitted) return;
 
-        // If card hasn't been flipped yet, flip it first
+        // Flip first
         if (!flippedCards[card.id]) {
             flipCard(card.id);
             return;
@@ -135,51 +147,28 @@ const Game = () => {
         }
     };
 
-    const flipSubmission = (subId) => {
+    const flipSubmission = (subIdx) => {
         playBop();
-        setFlippedSubmissions(prev => ({ ...prev, [subId]: true }));
+        setFlippedSubmissions(prev => ({ ...prev, [subIdx]: true }));
     };
 
-    const handleConfirmPlay = (finalSelection = mySelection) => {
-        if (finalSelection.length !== maxSelections) return;
-        setMySelection(finalSelection);
+    const handleConfirmPlay = async () => {
+        if (mySelection.length !== maxSelections) return;
 
-        // Remove played cards from hand immediately
-        setHand(hand.filter(c => !finalSelection.find(fs => fs.id === c.id)));
-        setPhase(PHASES.WAITING);
+        // Submit card indices to Firebase
+        const cardIndices = mySelection.map(c => c.index);
+        await submitCards(cardIndices);
+        setHasSubmitted(true);
     };
 
-    const handleConfirmVote = (submissionId) => {
-        if (!isHost) return; // Only the boss can vote
-        setVotedFor(submissionId);
-
-        // The boss chooses the winner directly
-        const winningSubmission = submissions.find(s => s.id === submissionId);
-
-        setWinner(winningSubmission.ownerId);
-        setLastWinner(winningSubmission.ownerId); // Trigger +1 anim
-        setScores(prev => ({
-            ...prev,
-            [winningSubmission.ownerId]: prev[winningSubmission.ownerId] + 1
-        }));
-        playWin();
-        setPhase(PHASES.REVEAL);
-
-        // Clear out the animation after 2 seconds
-        setTimeout(() => setLastWinner(null), 2000);
+    const handleBossVote = async (submissionPlayerId) => {
+        if (!isBoss) return;
+        await bossVote(submissionPlayerId);
     };
 
-    const nextRound = () => {
+    const handleNextRound = async () => {
         playBop();
-        setRound(r => r + 1);
-        setCurrentBlackCard(cardsData.blackCards[Math.floor(Math.random() * cardsData.blackCards.length)]);
-        setMySelection([]);
-        setSubmissions([]);
-        setVotedFor(null);
-        setWinner(null);
-        setFlippedCards({});
-        setFlippedSubmissions({});
-        setPhase(PHASES.DEALING);
+        await firebaseNextRound();
     };
 
     const requestEndGame = () => {
@@ -187,12 +176,10 @@ const Game = () => {
         setShowEndConfirm(true);
     };
 
-    const confirmEndGame = () => {
+    const confirmEndGame = async () => {
         playBop();
         setShowEndConfirm(false);
-        stopMusic();
-        playPodium();
-        setPhase(PHASES.END_GAME);
+        await firebaseEndGame();
     };
 
     const cancelEndGame = () => {
@@ -200,26 +187,33 @@ const Game = () => {
         setShowEndConfirm(false);
     };
 
-    const handleExit = () => {
+    const handleExit = async () => {
         playBop();
         stopMusic();
-        startMusic(); // Restart proper loop if needed in lobby
-        navigate('/lobby');
+        startMusic();
+        await leaveRoom();
+        navigate('/');
     };
-
 
     // --- Render Helpers ---
 
-    const renderBlackCardText = (mockCards = mySelection) => {
+    const getPlayerInfo = (id) => {
+        if (firebasePlayers && firebasePlayers[id]) {
+            const fp = firebasePlayers[id];
+            return { name: fp.name || 'Joueur', avatar: fp.avatar || null };
+        }
+        return { name: 'Joueur', avatar: null };
+    };
+
+    const renderBlackCardText = (answerCards = []) => {
         const parts = currentBlackCard.text.split('_____');
         if (parts.length === 1) {
-            // No blanks, just append the answer
             return (
                 <React.Fragment>
                     {currentBlackCard.text}
-                    {mockCards.length > 0 && (
+                    {answerCards.length > 0 && (
                         <div style={{ color: 'var(--accent-cyan)', marginTop: '10px' }}>
-                            {mockCards.map(c => c.text).join(' ')}
+                            {answerCards.map(c => c.text).join(' ')}
                         </div>
                     )}
                 </React.Fragment>
@@ -231,12 +225,17 @@ const Game = () => {
                 <span>{part}</span>
                 {i < arr.length - 1 && (
                     <span style={{ color: 'var(--accent-cyan)', textDecoration: 'underline', padding: '0 5px', fontWeight: '900' }}>
-                        {mockCards[i] ? mockCards[i].text.replace('.', '') : '[___]'}
+                        {answerCards[i] ? answerCards[i].text.replace('.', '') : '[___]'}
                     </span>
                 )}
             </React.Fragment>
         ));
     };
+
+    // Sorted scores for scoreboard
+    const sortedScores = Object.entries(scores)
+        .map(([id, score]) => ({ id, ...getPlayerInfo(id), score, isBoss: id === bossId }))
+        .sort((a, b) => b.score - a.score);
 
     return (
         <motion.div
@@ -271,68 +270,58 @@ const Game = () => {
                         </div>
                     </div>
 
-                    {/* Scoreboard (Gamified - Top 5 max with overflow indicator) */}
+                    {/* Scoreboard */}
                     <div className="scoreboard-container" style={{
                         display: 'flex', gap: '15px', alignItems: 'center', maxWidth: 'calc(100% - 140px)',
                         overflowX: 'auto', scrollbarWidth: 'none', padding: '0 10px',
                         maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
                     }}>
-                        {(() => {
-                            const getPlayerInfo = (id) => {
-                                // Check Firebase data first
-                                if (firebasePlayers && firebasePlayers[id]) {
-                                    const fp = firebasePlayers[id];
-                                    return { name: fp.name.toUpperCase(), avatar: fp.avatar || null, color: id === playerId ? 'var(--accent-cyan)' : '#ff007f' };
-                                }
-                                if (id === 'me' || id === playerId) return { name: myPseudo.toUpperCase(), avatar: myAvatar, color: 'var(--accent-cyan)' };
-                                const bot = BOTS.find(b => b.id === id);
-                                if (bot) return { name: bot.name.toUpperCase(), avatar: null, color: bot.color };
-                                return { name: id.toUpperCase(), avatar: null, color: '#888' };
-                            };
-
-                            const sortedScores = Object.entries(scores)
-                                .map(([id, score]) => ({ id, ...getPlayerInfo(id), score }))
-                                .sort((a, b) => b.score - a.score);
-
-                            const top5 = sortedScores.slice(0, 5);
-                            const hasMore = sortedScores.length > 5;
-
-                            return (
-                                <>
-                                    {top5.map((player, idx) => (
-                                        <React.Fragment key={player.id}>
-                                            {idx > 0 && <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />}
-                                            <div className="score-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
-                                                {/* Avatar */}
-                                                <div style={{
-                                                    width: '24px', height: '24px', borderRadius: '50%', marginBottom: '2px',
-                                                    background: player.avatar ? `url(${player.avatar}) center/cover` : `linear-gradient(135deg, ${player.color}, rgba(255,255,255,0.2))`,
-                                                    border: `1.5px solid ${player.color}`,
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    fontSize: '0.5rem', fontWeight: '900', color: '#fff', overflow: 'hidden'
-                                                }}>
-                                                    {!player.avatar && player.name.charAt(0)}
-                                                </div>
-                                                <span style={{ fontSize: '0.5rem', color: 'var(--text-muted)', maxWidth: '50px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>{player.name}</span>
-                                                <span style={{ fontWeight: '900', color: player.color, fontSize: '1.1rem' }}>{player.score}</span>
-                                                <AnimatePresence>
-                                                    {lastWinner === player.id && (
-                                                        <motion.div initial={{ y: 0, opacity: 1, scale: 0.5 }} animate={{ y: -30, opacity: 0, scale: 1.5 }} transition={{ duration: 1 }} style={{ position: 'absolute', top: 0, color: player.color, fontWeight: '900', textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>+1</motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </div>
-                                        </React.Fragment>
-                                    ))}
-                                    {hasMore && (
-                                        <ArrowRight color="var(--text-muted)" size={16} style={{ flexShrink: 0, marginLeft: '5px' }} />
+                        {sortedScores.slice(0, 5).map((player, idx) => (
+                            <React.Fragment key={player.id}>
+                                {idx > 0 && <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />}
+                                <div className="score-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
+                                    {/* Boss badge */}
+                                    {player.isBoss && (
+                                        <div style={{
+                                            position: 'absolute', top: '-8px', right: '-8px',
+                                            background: 'linear-gradient(135deg, #FFD700, #f59e0b)',
+                                            width: '16px', height: '16px', borderRadius: '50%',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            zIndex: 5, boxShadow: '0 0 6px rgba(255,215,0,0.5)'
+                                        }}>
+                                            <Crown size={9} color="#fff" />
+                                        </div>
                                     )}
-                                </>
-                            );
-                        })()}
+                                    {/* Avatar */}
+                                    <div style={{
+                                        width: '24px', height: '24px', borderRadius: '50%', marginBottom: '2px',
+                                        background: player.avatar ? `url(${player.avatar}) center/cover` : `linear-gradient(135deg, ${player.id === playerId ? 'var(--accent-cyan)' : '#ff007f'}, rgba(255,255,255,0.2))`,
+                                        border: `1.5px solid ${player.id === playerId ? 'var(--accent-cyan)' : '#ff007f'}`,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        fontSize: '0.5rem', fontWeight: '900', color: '#fff', overflow: 'hidden'
+                                    }}>
+                                        {!player.avatar && player.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span style={{ fontSize: '0.5rem', color: 'var(--text-muted)', maxWidth: '50px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                                        {player.name.toUpperCase()}
+                                        {player.id === playerId && ' (toi)'}
+                                    </span>
+                                    <span style={{ fontWeight: '900', color: player.id === playerId ? 'var(--accent-cyan)' : '#ff007f', fontSize: '1.1rem' }}>{player.score}</span>
+                                    <AnimatePresence>
+                                        {lastWinner === player.id && (
+                                            <motion.div initial={{ y: 0, opacity: 1, scale: 0.5 }} animate={{ y: -30, opacity: 0, scale: 1.5 }} transition={{ duration: 1 }} style={{ position: 'absolute', top: 0, color: 'var(--accent-cyan)', fontWeight: '900', textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>+1</motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </React.Fragment>
+                        ))}
+                        {sortedScores.length > 5 && (
+                            <ArrowRight color="var(--text-muted)" size={16} style={{ flexShrink: 0, marginLeft: '5px' }} />
+                        )}
                     </div>
 
                     <div style={{ position: 'absolute', right: '20px', zIndex: 10 }}>
-                        {((phase === PHASES.DEALING || phase === PHASES.REVEAL || phase === PHASES.PLAYING || phase === PHASES.VOTING || phase === PHASES.WAITING) && isHost) && (
+                        {isHost && phase !== PHASES.END_GAME && (
                             <motion.div
                                 className="top-bar-btn"
                                 whileHover={{ scale: 1.05 }}
@@ -368,13 +357,23 @@ const Game = () => {
                 {phase !== PHASES.END_GAME && (
                     <div style={{
                         fontSize: '0.7rem', letterSpacing: '3px', color: 'var(--text-muted)', textTransform: 'uppercase',
-                        marginBottom: '8px'
+                        marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px'
                     }}>
                         Manche {round}
+                        {isBoss && (
+                            <span style={{
+                                background: 'linear-gradient(135deg, #FFD700, #f59e0b)',
+                                padding: '2px 8px', borderRadius: '20px',
+                                fontSize: '0.55rem', fontWeight: '900', color: '#000',
+                                display: 'flex', alignItems: 'center', gap: '4px'
+                            }}>
+                                <Crown size={10} /> BOSS
+                            </span>
+                        )}
                     </div>
                 )}
 
-                {/* Black Card (Compact for mobile) */}
+                {/* Black Card */}
                 <motion.div
                     className="black-card-wrapper"
                     layout
@@ -413,21 +412,27 @@ const Game = () => {
                             <>
                                 <Trophy size={30} color="var(--accent-pink)" style={{ marginBottom: '8px' }} />
                                 <h2 className="black-card-text" style={{ fontSize: '1rem', fontWeight: '900', lineHeight: '1.3' }}>
-                                    {renderBlackCardText(submissions.find(s => s.ownerId === winner)?.cards || [])}
+                                    {renderBlackCardText(
+                                        winner && playedCards[winner]
+                                            ? playedCards[winner].cards.map(idx => ({ text: cardsData.whiteCards[idx] || '???' }))
+                                            : []
+                                    )}
                                 </h2>
-                                <div style={{ marginTop: '10px', color: winner === 'me' ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: 'bold', fontSize: '0.8rem' }}>
-                                    {winner === 'me' ? 'VOUS AVEZ GAGNÉ !' : `${winner.toUpperCase()} GAGNE`}
+                                <div style={{ marginTop: '10px', fontWeight: 'bold', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ color: winner === playerId ? 'var(--accent-cyan)' : 'var(--accent-pink)' }}>
+                                        {winner === playerId ? '🎉 VOUS AVEZ GAGNÉ !' : `🏆 ${getPlayerInfo(winner).name.toUpperCase()} GAGNE !`}
+                                    </span>
                                 </div>
                             </>
                         ) : (
                             <>
                                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 'bold', marginBottom: '8px' }}>
-                                    {phase === PHASES.VOTING ? 'VOTER POUR LA MEILLEURE' : 'CARTE QUESTION'}
+                                    {phase === 'VOTING' ? 'VOTER POUR LA MEILLEURE' : 'CARTE QUESTION'}
                                 </div>
                                 <h2 className="black-card-text" style={{ fontSize: '1.05rem', fontWeight: '900', lineHeight: '1.3' }}>
                                     {renderBlackCardText(mySelection)}
                                 </h2>
-                                {(phase === PHASES.PLAYING || phase === PHASES.DEALING) && (
+                                {phase === 'PLAYING' && !isBoss && (
                                     <div style={{ marginTop: '10px', color: 'var(--accent-blue)', fontWeight: 'bold', fontSize: '0.65rem', letterSpacing: '1px' }}>
                                         {maxSelections} CARTE{maxSelections > 1 ? 'S' : ''} REQUISE{maxSelections > 1 ? 'S' : ''}
                                     </div>
@@ -437,9 +442,9 @@ const Game = () => {
                     </div>
                 </motion.div>
 
-                {/* Center message for waiting phase */}
+                {/* Waiting messages */}
                 <AnimatePresence>
-                    {phase === PHASES.WAITING && (
+                    {phase === 'PLAYING' && hasSubmitted && !isBoss && (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -449,10 +454,29 @@ const Game = () => {
                             EN ATTENTE DES AUTRES JOUEURS...
                         </motion.div>
                     )}
+                    {phase === 'PLAYING' && isBoss && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0 }}
+                            style={{ marginTop: '10px', textAlign: 'center' }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                <Crown size={18} color="#FFD700" />
+                                <span style={{ fontWeight: '900', color: '#FFD700', fontSize: '0.9rem' }}>VOUS ÊTES LE BOSS</span>
+                            </div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '6px' }}>
+                                Attendez que les joueurs soumettent leurs cartes...
+                            </div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginTop: '4px' }}>
+                                {Object.keys(playedCards).length} / {nonBossPlayers.length} ont joué
+                            </div>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
             </div>
 
-            {/* Bottom Section: Interactive Area (Hand or Voting Options) */}
+            {/* Bottom Section: Interactive Area */}
             <div className="glass-panel bottom-panel" style={{
                 position: 'relative',
                 zIndex: 10,
@@ -468,11 +492,11 @@ const Game = () => {
                 overflow: 'hidden'
             }}>
                 <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.7rem', letterSpacing: '2px', fontWeight: 'bold', marginBottom: '8px', flexShrink: 0 }}>
-                    {phase === PHASES.VOTING ? 'RÉPONSES ANONYMES' : phase === PHASES.END_GAME ? 'RÉSULTATS FINAUX' : 'VOTRE MAIN (11 CARTES)'}
+                    {phase === 'VOTING' ? 'RÉPONSES ANONYMES' : phase === PHASES.END_GAME ? 'RÉSULTATS FINAUX' : isBoss ? 'VOUS ÊTES LE BOSS — PAS DE CARTES' : `VOTRE MAIN (${hand.length} CARTES)`}
                 </div>
 
-                {/* Hand View - 2 Column Vertical Grid with Flip Cards */}
-                {(phase === PHASES.DEALING || phase === PHASES.PLAYING || phase === PHASES.WAITING) && (
+                {/* Hand View — non-boss players only */}
+                {(phase === 'PLAYING') && !isBoss && (
                     <div className="hand-container" style={{
                         display: 'grid',
                         gridTemplateColumns: '1fr 1fr',
@@ -493,20 +517,20 @@ const Game = () => {
                                 return (
                                     <motion.div
                                         key={card.id}
-                                        initial={phase === PHASES.DEALING ? { opacity: 0, y: 50, scale: 0.8, rotateZ: 5 } : { opacity: 1, y: 0, scale: 1 }}
+                                        initial={{ opacity: 0, y: 50, scale: 0.8, rotateZ: 5 }}
                                         animate={{
-                                            opacity: phase === PHASES.WAITING && !isSelected ? 0.3 : 1,
+                                            opacity: hasSubmitted && !isSelected ? 0.3 : 1,
                                             y: 0, scale: 1, rotateZ: 0
                                         }}
                                         exit={{ opacity: 0, scale: 0.5, y: -20 }}
                                         transition={{
-                                            delay: phase === PHASES.DEALING ? index * 0.06 : 0,
+                                            delay: index * 0.06,
                                             type: 'spring', stiffness: 300, damping: 20
                                         }}
-                                        onClick={() => toggleSelection(card)}
+                                        onClick={() => !hasSubmitted && toggleSelection(card)}
                                         className="card-container white-card"
                                         style={{
-                                            cursor: phase === PHASES.PLAYING ? 'pointer' : 'default',
+                                            cursor: hasSubmitted ? 'default' : 'pointer',
                                             minHeight: '130px',
                                             position: 'relative'
                                         }}
@@ -528,7 +552,6 @@ const Game = () => {
                                                     </div>
                                                     <span style={{ fontSize: '0.4rem', fontWeight: '900', letterSpacing: '1.5px', color: 'rgba(0,0,0,0.3)' }}>AU FOND DU TROU</span>
                                                 </div>
-                                                {/* Corner marks */}
                                                 <div style={{ position: 'absolute', top: '6px', left: '6px', width: '10px', height: '10px', borderTop: '2px solid rgba(0,0,0,0.1)', borderLeft: '2px solid rgba(0,0,0,0.1)', borderRadius: '2px 0 0 0' }} />
                                                 <div style={{ position: 'absolute', bottom: '6px', right: '6px', width: '10px', height: '10px', borderBottom: '2px solid rgba(0,0,0,0.1)', borderRight: '2px solid rgba(0,0,0,0.1)', borderRadius: '0 0 2px 0' }} />
                                             </div>
@@ -576,38 +599,61 @@ const Game = () => {
                     </div>
                 )}
 
+                {/* Boss waiting view during PLAYING */}
+                {phase === 'PLAYING' && isBoss && (
+                    <div style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        justifyContent: 'center', flex: 1, gap: '15px', padding: '30px'
+                    }}>
+                        <Crown size={50} color="#FFD700" />
+                        <div style={{ fontSize: '1.1rem', fontWeight: '900', color: '#FFD700', textAlign: 'center' }}>
+                            VOUS ÊTES LE BOSS
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                            Les joueurs choisissent leurs cartes...<br />
+                            Vous voterez ensuite pour la meilleure réponse !
+                        </div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--accent-cyan)' }}>
+                            {Object.keys(playedCards).length} / {nonBossPlayers.length}
+                        </div>
+                        <motion.div
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FFD700' }}
+                        />
+                    </div>
+                )}
+
                 {/* Voting View — Boss Only */}
-                {phase === PHASES.VOTING && (
+                {phase === 'VOTING' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '0 15px', overflowY: 'auto', flex: 1 }}>
-                        {isHost ? (
+                        {isBoss ? (
                             <>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '4px' }}>
-                                    <Crown size={16} color="var(--accent-pink)" />
-                                    <span style={{ fontSize: '0.7rem', color: 'var(--accent-pink)', fontWeight: '800', letterSpacing: '1px' }}>
-                                        VOUS ÊTES LE BOSS — CHOISISSEZ LA MEILLEURE
+                                    <Crown size={16} color="#FFD700" />
+                                    <span style={{ fontSize: '0.7rem', color: '#FFD700', fontWeight: '800', letterSpacing: '1px' }}>
+                                        CHOISISSEZ LA MEILLEURE RÉPONSE
                                     </span>
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                    {submissions.map((sub) => {
-                                        const isMySub = sub.ownerId === 'me';
-                                        const isSubFlipped = !!flippedSubmissions[sub.id];
+                                    {allSubmissions.map((sub, idx) => {
+                                        const isSubFlipped = !!flippedSubmissions[idx];
                                         return (
                                             <motion.div
-                                                key={sub.id}
+                                                key={idx}
                                                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 className="card-container"
                                                 onClick={() => {
                                                     if (!isSubFlipped) {
-                                                        flipSubmission(sub.id);
-                                                    } else if (!isMySub) {
-                                                        handleConfirmVote(sub.id);
+                                                        flipSubmission(idx);
+                                                    } else {
+                                                        handleBossVote(sub.playerId);
                                                     }
                                                 }}
                                                 style={{
                                                     minHeight: '130px',
-                                                    cursor: isMySub && isSubFlipped ? 'not-allowed' : 'pointer',
-                                                    opacity: isMySub && isSubFlipped ? 0.5 : 1
+                                                    cursor: 'pointer'
                                                 }}
                                             >
                                                 <div className={`card-inner ${isSubFlipped ? 'flipped' : ''}`} style={{ width: '100%', height: '100%', minHeight: '130px' }}>
@@ -624,11 +670,6 @@ const Game = () => {
                                                         <div style={{ flex: 1, fontSize: '0.85rem', fontWeight: '800', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: '1.3' }}>
                                                             {sub.cards.map(c => c.text).join(' / ')}
                                                         </div>
-                                                        {isMySub && (
-                                                            <span style={{ fontSize: '0.6rem', color: 'rgba(0,168,255,0.6)', fontWeight: '700', position: 'absolute', bottom: '8px' }}>
-                                                                VOTRE CARTE
-                                                            </span>
-                                                        )}
                                                     </div>
                                                 </div>
                                             </motion.div>
@@ -641,17 +682,17 @@ const Game = () => {
                                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                                 justifyContent: 'center', flex: 1, gap: '15px', padding: '30px'
                             }}>
-                                <Crown size={40} color="var(--accent-pink)" />
+                                <Crown size={40} color="#FFD700" />
                                 <div style={{ fontSize: '1.1rem', fontWeight: '900', color: '#fff', textAlign: 'center' }}>
                                     LE BOSS CHOISIT...
                                 </div>
                                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-                                    Le maître de la manche lit les réponses et choisit sa préférée
+                                    {getPlayerInfo(bossId).name} lit les réponses et choisit sa préférée
                                 </div>
                                 <motion.div
                                     animate={{ scale: [1, 1.2, 1] }}
                                     transition={{ repeat: Infinity, duration: 1.5 }}
-                                    style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--accent-pink)', marginTop: '10px' }}
+                                    style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FFD700', marginTop: '10px' }}
                                 />
                             </div>
                         )}
@@ -667,7 +708,7 @@ const Game = () => {
                                 animate={{ scale: 1 }}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                onClick={nextRound}
+                                onClick={handleNextRound}
                                 style={{
                                     padding: '18px 40px', borderRadius: '30px', fontSize: '1.2rem', fontWeight: '900',
                                     background: 'linear-gradient(135deg, var(--accent-cyan) 0%, #0099ff 100%)',
@@ -689,23 +730,12 @@ const Game = () => {
                 {phase === PHASES.END_GAME && (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', flex: 1, padding: '20px 0', width: '100%', overflowY: 'auto' }}>
                         {(() => {
-                            const getPlayerInfo = (id) => {
-                                if (firebasePlayers && firebasePlayers[id]) {
-                                    const fp = firebasePlayers[id];
-                                    return { name: fp.name, avatar: fp.avatar || null };
-                                }
-                                if (id === 'me' || id === playerId) return { name: myPseudo, avatar: myAvatar };
-                                const bot = BOTS.find(b => b.id === id);
-                                if (bot) return { name: bot.name, avatar: null };
-                                return { name: id, avatar: null };
-                            };
-
-                            const sortedScores = Object.entries(scores)
+                            const podiumScores = Object.entries(scores)
                                 .map(([id, score]) => ({ id, ...getPlayerInfo(id), score }))
                                 .sort((a, b) => b.score - a.score);
 
-                            const top3 = sortedScores.slice(0, 3);
-                            const remaining = sortedScores.slice(3);
+                            const top3 = podiumScores.slice(0, 3);
+                            const remaining = podiumScores.slice(3);
 
                             return (
                                 <>
@@ -716,7 +746,6 @@ const Game = () => {
                                             if (!player) return null;
                                             const isFirst = idx === 0;
                                             const isSecond = idx === 1;
-                                            const isThird = idx === 2;
                                             return (
                                                 <motion.div
                                                     key={player.id}
@@ -744,7 +773,6 @@ const Game = () => {
                                                         position: 'absolute', top: '-50px',
                                                         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'
                                                     }}>
-                                                        {/* Avatar on podium */}
                                                         <div style={{
                                                             width: '30px', height: '30px', borderRadius: '50%',
                                                             background: player.avatar ? `url(${player.avatar}) center/cover` : `linear-gradient(135deg, ${isFirst ? '#FFD700' : isSecond ? '#C0C0C0' : '#CD7F32'}, rgba(255,255,255,0.3))`,
@@ -769,7 +797,7 @@ const Game = () => {
                                         })}
                                     </div>
 
-                                    {/* Remaining Players List (Mario Kart Style) */}
+                                    {/* Remaining Players */}
                                     {remaining.length > 0 && (
                                         <div style={{ width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
                                             {remaining.map((player, index) => (
@@ -817,9 +845,9 @@ const Game = () => {
                     </div>
                 )}
 
-                {/* Play Button Overlay - fixed at bottom of panel */}
+                {/* Play Button Overlay */}
                 <AnimatePresence>
-                    {phase === PHASES.PLAYING && mySelection.length === maxSelections && (
+                    {phase === 'PLAYING' && !isBoss && !hasSubmitted && mySelection.length === maxSelections && (
                         <motion.div
                             className="confirm-panel"
                             initial={{ y: 60, opacity: 0 }}

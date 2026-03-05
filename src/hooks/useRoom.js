@@ -3,6 +3,7 @@ import { db } from '../utils/firebase';
 import {
     ref, set, push, onValue, off, update, remove, get, onDisconnect
 } from 'firebase/database';
+import cardsData from '../data/cards.json';
 
 // Generate a random 4-char room code
 const generateCode = () => {
@@ -20,6 +21,16 @@ const getPlayerId = () => {
         localStorage.setItem('player_id', id);
     }
     return id;
+};
+
+// Shuffle helper
+const shuffleArray = (array) => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
 };
 
 export const useRoom = () => {
@@ -76,9 +87,12 @@ export const useRoom = () => {
                 state: {
                     phase: 'LOBBY',
                     round: 0,
+                    bossId: null,
                     blackCard: null,
+                    hands: {},
                     playedCards: {},
-                    votes: {}
+                    scores: {},
+                    winner: null
                 },
                 players: {
                     [playerId]: {
@@ -174,7 +188,7 @@ export const useRoom = () => {
         });
     }, [roomCode, playerId, players]);
 
-    // Update game state (host only)
+    // Update game state (any keyed updates)
     const updateGameState = useCallback(async (newState) => {
         if (!roomCode) return;
         await update(ref(db, `rooms/${roomCode}/state`), newState);
@@ -187,20 +201,135 @@ export const useRoom = () => {
         await update(ref(db, `rooms/${roomCode}/players/${pid}`), data);
     }, [roomCode, playerId]);
 
-    // Set played cards
-    const playCards = useCallback(async (cards) => {
+    // =========================================
+    // GAME FUNCTIONS
+    // =========================================
+
+    // Start the game — host calls this from Lobby
+    const startGame = useCallback(async () => {
+        if (!roomCode) return;
+
+        const snapshot = await get(ref(db, `rooms/${roomCode}`));
+        if (!snapshot.exists()) return;
+        const roomData = snapshot.val();
+        const playerIds = Object.keys(roomData.players || {});
+
+        if (playerIds.length < 2) return;
+
+        // Pick random boss for round 1
+        const bossId = playerIds[Math.floor(Math.random() * playerIds.length)];
+
+        // Pick a random black card
+        const blackCard = cardsData.blackCards[Math.floor(Math.random() * cardsData.blackCards.length)];
+
+        // Shuffle all white cards and deal 11 to each non-boss player
+        const allWhites = shuffleArray(cardsData.whiteCards.map((text, i) => i));
+        const hands = {};
+        let cardIndex = 0;
+
+        // Non-boss players get 11 cards each
+        const nonBossPlayers = playerIds.filter(id => id !== bossId);
+        for (const pid of nonBossPlayers) {
+            hands[pid] = allWhites.slice(cardIndex, cardIndex + 11);
+            cardIndex += 11;
+        }
+        // Boss gets no cards (empty hand)
+        hands[bossId] = [];
+
+        // Initialize scores if first round
+        const scores = {};
+        playerIds.forEach(pid => {
+            scores[pid] = roomData.players[pid]?.score || 0;
+        });
+
+        await update(ref(db, `rooms/${roomCode}/state`), {
+            phase: 'PLAYING',
+            round: 1,
+            bossId,
+            blackCard,
+            hands,
+            playedCards: {},
+            scores,
+            winner: null,
+            deckOffset: cardIndex
+        });
+    }, [roomCode]);
+
+    // Submit cards — non-boss player submits their selection
+    const submitCards = useCallback(async (cardIndices) => {
         if (!roomCode) return;
         await set(ref(db, `rooms/${roomCode}/state/playedCards/${playerId}`), {
-            cards,
+            cards: cardIndices,
             timestamp: Date.now()
         });
     }, [roomCode, playerId]);
 
-    // Vote for a player
-    const vote = useCallback(async (votedPlayerId) => {
+    // Boss votes for winner — submissionPlayerId is the player whose card won
+    const bossVote = useCallback(async (winnerPlayerId) => {
+        if (!roomCode || !gameState) return;
+
+        // Update score
+        const currentScore = (gameState.scores?.[winnerPlayerId] || 0) + 1;
+        await update(ref(db, `rooms/${roomCode}/state`), {
+            winner: winnerPlayerId,
+            phase: 'REVEAL',
+            [`scores/${winnerPlayerId}`]: currentScore
+        });
+
+        // Also update player score
+        await update(ref(db, `rooms/${roomCode}/players/${winnerPlayerId}`), {
+            score: currentScore
+        });
+    }, [roomCode, gameState]);
+
+    // Next round — winner becomes new boss
+    const nextRound = useCallback(async () => {
+        if (!roomCode || !gameState) return;
+
+        const snapshot = await get(ref(db, `rooms/${roomCode}`));
+        if (!snapshot.exists()) return;
+        const roomData = snapshot.val();
+        const playerIds = Object.keys(roomData.players || {});
+
+        // Winner becomes the new boss, if no winner use random
+        const newBossId = gameState.winner || playerIds[Math.floor(Math.random() * playerIds.length)];
+
+        // Pick new black card
+        const blackCard = cardsData.blackCards[Math.floor(Math.random() * cardsData.blackCards.length)];
+
+        // Deal new hands — shuffle and deal 11 to each non-boss
+        const allWhites = shuffleArray(cardsData.whiteCards.map((text, i) => i));
+        const hands = {};
+        let cardIndex = 0;
+
+        const nonBossPlayers = playerIds.filter(id => id !== newBossId);
+        for (const pid of nonBossPlayers) {
+            hands[pid] = allWhites.slice(cardIndex, cardIndex + 11);
+            cardIndex += 11;
+        }
+        hands[newBossId] = [];
+
+        const newRound = (gameState.round || 1) + 1;
+
+        await update(ref(db, `rooms/${roomCode}/state`), {
+            phase: 'PLAYING',
+            round: newRound,
+            bossId: newBossId,
+            blackCard,
+            hands,
+            playedCards: {},
+            winner: null,
+            deckOffset: cardIndex
+        });
+    }, [roomCode, gameState]);
+
+    // End game
+    const endGame = useCallback(async () => {
         if (!roomCode) return;
-        await set(ref(db, `rooms/${roomCode}/state/votes/${playerId}`), votedPlayerId);
-    }, [roomCode, playerId]);
+        await update(ref(db, `rooms/${roomCode}/state`), {
+            phase: 'END_GAME'
+        });
+    }, [roomCode]);
 
     // Leave room
     const leaveRoom = useCallback(async () => {
@@ -241,15 +370,20 @@ export const useRoom = () => {
         isHost,
         playerId,
 
-        // Actions
+        // Room Actions
         createRoom,
         joinRoom,
         toggleReady,
         updateGameState,
         updatePlayer,
-        playCards,
-        vote,
         leaveRoom,
+
+        // Game Actions
+        startGame,
+        submitCards,
+        bossVote,
+        nextRound,
+        endGame,
 
         // Helpers
         playerCount: Object.keys(players).length,

@@ -23,7 +23,7 @@ const Lobby = () => {
 
     const {
         players, gameState, playerId, isHost,
-        joinRoom, toggleReady, updateGameState, leaveRoom
+        joinRoom, toggleReady, startGame, leaveRoom
     } = useRoom();
 
     // Join the room if we came from Home (already joined in Home for host)
@@ -46,7 +46,7 @@ const Lobby = () => {
 
     const handleStart = async () => {
         playBop();
-        await updateGameState({ phase: 'DEALING' });
+        await startGame();
         navigate('/game', { state: { code: roomCode } });
     };
 
@@ -77,7 +77,7 @@ const Lobby = () => {
 
     // If game started by host, navigate everyone to game
     useEffect(() => {
-        if (gameState?.phase === 'DEALING') {
+        if (gameState?.phase && gameState.phase !== 'LOBBY') {
             navigate('/game', { state: { code: roomCode } });
         }
     }, [gameState?.phase]);

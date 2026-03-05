@@ -17,6 +17,29 @@ const Home = () => {
     const scannerInstanceRef = useRef(null);
     const { createRoom, joinRoom } = useRoom();
 
+    // Auto-join from URL parameter ?code=XXXX
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const urlCode = params.get('code');
+        if (urlCode && urlCode.length >= 4) {
+            const cleanCode = urlCode.toUpperCase().slice(0, 4);
+            setCode(cleanCode);
+            // Auto-join after a short delay for UX
+            setTimeout(async () => {
+                setLoading(true);
+                const success = await joinRoom(cleanCode);
+                setLoading(false);
+                if (success) {
+                    // Clean URL
+                    window.history.replaceState({}, '', window.location.pathname);
+                    navigate('/lobby', { state: { code: cleanCode, isHost: false } });
+                } else {
+                    setJoinError('Room introuvable ou partie déjà commencée');
+                }
+            }, 500);
+        }
+    }, []);
+
     const handleCreate = async () => {
         setLoading(true);
         const roomCode = await createRoom();
