@@ -35,7 +35,9 @@ const Game = () => {
     // Local UI state
     const [mySelection, setMySelection] = useState([]);
     const [flippedCards, setFlippedCards] = useState({});
+    const [flipAnimating, setFlipAnimating] = useState({});
     const [flippedSubmissions, setFlippedSubmissions] = useState({});
+    const [flipAnimatingSubs, setFlipAnimatingSubs] = useState({});
     const [showEndConfirm, setShowEndConfirm] = useState(false);
     const [lastWinner, setLastWinner] = useState(null);
     const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -91,7 +93,9 @@ const Game = () => {
     useEffect(() => {
         setMySelection([]);
         setFlippedCards({});
+        setFlipAnimating({});
         setFlippedSubmissions({});
+        setFlipAnimatingSubs({});
         setHasSubmitted(false);
     }, [round]);
 
@@ -116,8 +120,14 @@ const Game = () => {
     // --- Actions ---
 
     const flipCard = (cardId) => {
+        if (flipAnimating[cardId]) return; // prevent double-tap
         playBop();
+        setFlipAnimating(prev => ({ ...prev, [cardId]: true }));
         setFlippedCards(prev => ({ ...prev, [cardId]: true }));
+        // Remove animation class after animation ends
+        setTimeout(() => {
+            setFlipAnimating(prev => ({ ...prev, [cardId]: false }));
+        }, 850);
     };
 
     const toggleSelection = (card) => {
@@ -138,8 +148,13 @@ const Game = () => {
     };
 
     const flipSubmission = (subIdx) => {
+        if (flipAnimatingSubs[subIdx]) return;
         playBop();
+        setFlipAnimatingSubs(prev => ({ ...prev, [subIdx]: true }));
         setFlippedSubmissions(prev => ({ ...prev, [subIdx]: true }));
+        setTimeout(() => {
+            setFlipAnimatingSubs(prev => ({ ...prev, [subIdx]: false }));
+        }, 850);
     };
 
     const handleConfirmPlay = async () => {
@@ -521,13 +536,13 @@ const Game = () => {
                                         className="card-container white-card"
                                         style={{
                                             cursor: hasSubmitted ? 'default' : 'pointer',
-                                            minHeight: '130px',
+                                            minHeight: '110px',
                                             position: 'relative'
                                         }}
                                     >
-                                        <div className={`card-inner ${isCardFlipped ? 'flipped' : ''}`} style={{ width: '100%', height: '100%', minHeight: '130px' }}>
+                                        <div className={`card-inner ${isCardFlipped ? 'flipped' : ''} ${flipAnimating[card.id] ? 'flip-animate' : ''}`} style={{ width: '100%', height: '100%', minHeight: '110px' }}>
                                             {/* Card Back */}
-                                            <div className="card-face card-back card-back-answer" style={{ minHeight: '130px' }}>
+                                            <div className="card-face card-back card-back-answer" style={{ minHeight: '110px' }}>
                                                 <div className="card-back-pattern" style={{ color: '#000' }} />
                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 1 }}>
                                                     <div style={{
@@ -549,7 +564,7 @@ const Game = () => {
                                             {/* Card Front */}
                                             <div
                                                 className={`card-face card-front card-front-answer ${isSelected ? 'card-selected' : ''}`}
-                                                style={{ minHeight: '130px', padding: '12px' }}
+                                                style={{ minHeight: '110px', padding: '10px' }}
                                             >
                                                 <div className="white-card-text" style={{
                                                     flex: 1, fontSize: '0.8rem', fontWeight: '700',
@@ -646,7 +661,7 @@ const Game = () => {
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <div className={`card-inner ${isSubFlipped ? 'flipped' : ''}`} style={{ width: '100%', height: '100%', minHeight: '130px' }}>
+                                                <div className={`card-inner ${isSubFlipped ? 'flipped' : ''} ${flipAnimatingSubs[idx] ? 'flip-animate' : ''}`} style={{ width: '100%', height: '100%', minHeight: '110px' }}>
                                                     {/* Back */}
                                                     <div className="card-face card-back card-back-answer" style={{ minHeight: '130px' }}>
                                                         <div className="card-back-pattern" style={{ color: '#000' }} />
