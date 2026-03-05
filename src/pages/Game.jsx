@@ -22,6 +22,10 @@ const BOTS = [
 const Game = () => {
     const navigate = useNavigate();
 
+    // Profile data from localStorage
+    const myPseudo = localStorage.getItem('profile_pseudo') || 'Vous';
+    const myAvatar = localStorage.getItem('profile_image') || null;
+
     // Mock host for testing (in real app, get from router state)
     const isHost = true;
 
@@ -251,8 +255,14 @@ const Game = () => {
                         maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
                     }}>
                         {(() => {
+                            const getPlayerInfo = (id) => {
+                                if (id === 'me') return { name: myPseudo.toUpperCase(), avatar: myAvatar, color: 'var(--accent-cyan)' };
+                                const bot = BOTS.find(b => b.id === id);
+                                return { name: bot.name.toUpperCase(), avatar: null, color: bot.color };
+                            };
+
                             const sortedScores = Object.entries(scores)
-                                .map(([id, score]) => ({ id, name: id === 'me' ? 'VOUS' : BOTS.find(b => b.id === id).name.toUpperCase(), score }))
+                                .map(([id, score]) => ({ id, ...getPlayerInfo(id), score }))
                                 .sort((a, b) => b.score - a.score);
 
                             const top5 = sortedScores.slice(0, 5);
@@ -264,11 +274,21 @@ const Game = () => {
                                         <React.Fragment key={player.id}>
                                             {idx > 0 && <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />}
                                             <div className="score-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
-                                                <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>{player.name}</span>
-                                                <span style={{ fontWeight: '900', color: player.id === 'me' ? 'var(--accent-cyan)' : player.id === 'bot1' ? '#ff007f' : '#00f0ff', fontSize: '1.2rem' }}>{player.score}</span>
+                                                {/* Avatar */}
+                                                <div style={{
+                                                    width: '24px', height: '24px', borderRadius: '50%', marginBottom: '2px',
+                                                    background: player.avatar ? `url(${player.avatar}) center/cover` : `linear-gradient(135deg, ${player.color}, rgba(255,255,255,0.2))`,
+                                                    border: `1.5px solid ${player.color}`,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    fontSize: '0.5rem', fontWeight: '900', color: '#fff', overflow: 'hidden'
+                                                }}>
+                                                    {!player.avatar && player.name.charAt(0)}
+                                                </div>
+                                                <span style={{ fontSize: '0.5rem', color: 'var(--text-muted)', maxWidth: '50px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>{player.name}</span>
+                                                <span style={{ fontWeight: '900', color: player.color, fontSize: '1.1rem' }}>{player.score}</span>
                                                 <AnimatePresence>
                                                     {lastWinner === player.id && (
-                                                        <motion.div initial={{ y: 0, opacity: 1, scale: 0.5 }} animate={{ y: -30, opacity: 0, scale: 1.5 }} transition={{ duration: 1 }} style={{ position: 'absolute', top: 0, color: player.id === 'me' ? 'var(--accent-cyan)' : player.id === 'bot1' ? '#ff007f' : '#00f0ff', fontWeight: '900', textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>+1</motion.div>
+                                                        <motion.div initial={{ y: 0, opacity: 1, scale: 0.5 }} animate={{ y: -30, opacity: 0, scale: 1.5 }} transition={{ duration: 1 }} style={{ position: 'absolute', top: 0, color: player.color, fontWeight: '900', textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>+1</motion.div>
                                                     )}
                                                 </AnimatePresence>
                                             </div>
@@ -549,8 +569,14 @@ const Game = () => {
                 {phase === PHASES.END_GAME && (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', flex: 1, padding: '20px 0', width: '100%', overflowY: 'auto' }}>
                         {(() => {
+                            const getPlayerInfo = (id) => {
+                                if (id === 'me') return { name: myPseudo, avatar: myAvatar };
+                                const bot = BOTS.find(b => b.id === id);
+                                return { name: bot.name, avatar: null };
+                            };
+
                             const sortedScores = Object.entries(scores)
-                                .map(([id, score]) => ({ id, name: id === 'me' ? 'Vous' : BOTS.find(b => b.id === id).name, score }))
+                                .map(([id, score]) => ({ id, ...getPlayerInfo(id), score }))
                                 .sort((a, b) => b.score - a.score);
 
                             const top3 = sortedScores.slice(0, 3);
@@ -590,10 +616,22 @@ const Game = () => {
                                                     }}
                                                 >
                                                     <div style={{
-                                                        position: 'absolute', top: '-40px', background: 'rgba(0,0,0,0.5)',
-                                                        padding: '4px 8px', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 'bold'
+                                                        position: 'absolute', top: '-50px',
+                                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'
                                                     }}>
-                                                        {player.name}
+                                                        {/* Avatar on podium */}
+                                                        <div style={{
+                                                            width: '30px', height: '30px', borderRadius: '50%',
+                                                            background: player.avatar ? `url(${player.avatar}) center/cover` : `linear-gradient(135deg, ${isFirst ? '#FFD700' : isSecond ? '#C0C0C0' : '#CD7F32'}, rgba(255,255,255,0.3))`,
+                                                            border: '2px solid rgba(255,255,255,0.6)', overflow: 'hidden',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                            fontSize: '0.6rem', fontWeight: '900', color: '#fff'
+                                                        }}>
+                                                            {!player.avatar && player.name.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <span style={{ fontSize: '0.7rem', fontWeight: 'bold', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '8px', whiteSpace: 'nowrap' }}>
+                                                            {player.name}
+                                                        </span>
                                                     </div>
                                                     <div style={{ fontWeight: '900', fontSize: '1.8rem', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                                                         {idx + 1}
