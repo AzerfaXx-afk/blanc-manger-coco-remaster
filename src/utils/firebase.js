@@ -2,13 +2,13 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDvkn7dbuD_DH-fCZFz_sl_n-yHAmVHigE",
-    authDomain: "au-fond-du-trou.firebaseapp.com",
-    databaseURL: "https://au-fond-du-trou-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "au-fond-du-trou",
-    storageBucket: "au-fond-du-trou.firebasestorage.app",
-    messagingSenderId: "499061483352",
-    appId: "1:499061483352:web:a6ed4783d0bb9e4281272d"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
